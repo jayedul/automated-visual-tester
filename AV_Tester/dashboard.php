@@ -16,7 +16,7 @@
 		}
 
         public function tests_dashboard_content() {
-            echo 'This one';
+            echo '<div id="avt_dashboard_container"></div>';
         }
         
         public function load_dashboard_scripts() {
@@ -25,14 +25,16 @@
                 return;
             }
 
-            
+            wp_enqueue_script( 'avt-dashboard-page', AVT_URL_BASE . '/assets/dashboard.js', array(), null, true );
         }
         
         public function load_tester_scripts() {
             if(!isset( $_COOKIE['av_testing'] )) {
                 // Don't enqueue tester if cookie identifier not set
-                return;
+                // return;
             }
+
+            // wp_enqueue_script( 'av-tester-js', AVT_URL_BASE . '/assets/tester.js', array(), null, true );
         }
     }
 ?>
