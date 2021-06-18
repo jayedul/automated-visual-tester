@@ -8,6 +8,5 @@ Thumbs.db
 package-lock.json
 yarn.lock
 .sass-cache
-assets/dashboard.js.LICENSE.txt
 .prettierignore
 *.zip
