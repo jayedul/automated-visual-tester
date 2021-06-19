@@ -1,26 +1,26 @@
-import Spin from 'react-svg-spinner';
+import React from 'react';
+
+const getRandomString = p=>'k'+Math.random().toString(36).substring(2, 5)+new Date().getTime();
 
 const Spinner=props=>
 {
     let {
             allocate_space=false,
             space = true, 
-            size  = "15px", 
-            color = "gray", 
             center= false,
             loading
         
         }=props;
 
-    let visibility = loading ? 'visible' : 'invisible';
+    let visibility = loading ? 'visible' : 'hidden';
 
-    let spin=<Spin color={color} size={size}/>
+    let spin=<img src={window.avt_object.loading_icon_url}/>
 
-    let s=space ? <span className={visibility}>&nbsp;{spin}&nbsp;</span> : spin;
+    let s=space ? <span style={{visibility, verticalAlign:'middle'}}>&nbsp;{spin}&nbsp;</span> : spin;
 
-    center ? s=<div className={"d-block text-center "+visibility}>{spin}</div> : 0;
+    center ? s=<div style={{display: 'block', textAlign: 'center', visibility}}>{spin}</div> : 0;
 
     return loading ?  s : (allocate_space ? s : null);
 }
 
-export {Spinner}
+export {Spinner, getRandomString}
