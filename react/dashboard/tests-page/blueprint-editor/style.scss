@@ -1,0 +1,29 @@
+#avt-event-list {
+
+    background: white;
+    width: 100%;
+    padding: 20px 0;
+    
+    tr {
+        td{
+            padding: 4px;
+            width: 16.64%;
+
+            &:first-child{
+                text-align: center;
+            }
+
+            input, select, textarea {
+                width: 100%;
+            }
+        }
+
+        &:not(:hover) {
+            td:first-child, td:last-child {
+                * {
+                    display: none;
+                }
+            }
+        }
+    }
+}

@@ -20,6 +20,8 @@ class DashboardRoot extends Component {
         this.saveAll = this.saveAll.bind(this);
         this.addNewAction = this.addNewAction.bind(this);
         this.modifyEvent = this.modifyEvent.bind(this);
+        this.deleteAction = this.deleteAction.bind(this);
+        this.deleteTest = this.deleteTest.bind(this);
     }
 
     createNewTest() {
@@ -38,10 +40,19 @@ class DashboardRoot extends Component {
             blueprint: []
         }
 
-        this.setState({tests, current_one: new_key});
+        this.setState({tests, current_one: new_key}, ()=>this.addNewAction(0));
     }
 
-    addNewAction() {
+    deleteTest() {
+        let {tests, current_one} = this.state;
+        delete tests[current_one];
+
+        let next = Object.keys(tests)[0] || null;
+
+        this.setState({tests, current_one: next});
+    }
+
+    addNewAction(index) {
 
         let {tests, current_one} = this.state;
 
@@ -51,8 +62,14 @@ class DashboardRoot extends Component {
             xpath: ''
         }
 
-        tests[current_one].blueprint.push(blueprint);
+        tests[current_one].blueprint.splice(index, 0, blueprint);
 
+        this.setState({tests});
+    }
+
+    deleteAction(index) {
+        let {tests, current_one} = this.state;
+        tests[current_one].blueprint.splice(index, 1);
         this.setState({tests});
     }
 
@@ -134,7 +151,7 @@ class DashboardRoot extends Component {
                             Create New
                         </button>
                     }
-                    &nbsp;&nbsp;
+                    &nbsp;
                     {
                         !Object.keys(tests).length ? null :
                         <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={this.saveAll}>
@@ -151,19 +168,21 @@ class DashboardRoot extends Component {
                         <TestSelection 
                             tests={tests} 
                             current_one={current_one}
-                            onChange={current_one=>this.setState({current_one})} />
+                            onChange={current_one=>this.setState({current_one})}
+                            deleteTest={this.deleteTest} />
                     }
-
                 </div>
-                
-                <hr/>
             </div>
             
             <Spinner loading={fetching} center={true}/>
 
             {
                 (!current_one || !tests[current_one]) ? null :
-                <BlueprintEditor blueprint={tests[current_one].blueprint} addNewAction={this.addNewAction} onChange={this.modifyEvent}/>
+                <BlueprintEditor 
+                    blueprint={tests[current_one].blueprint} 
+                    addNewAction={this.addNewAction}
+                    deleteAction={this.deleteAction} 
+                    onChange={this.modifyEvent}/>
             }
             
         </div>
