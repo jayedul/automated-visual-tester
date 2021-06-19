@@ -32,6 +32,7 @@ class Dashboard {
         wp_enqueue_script( 'avt-dashboard-js', AVT_URL_BASE . '/assets/dashboard.js', array(), null, true );
         
         wp_localize_script( 'avt-dashboard-js', 'avt_object', array(
+            'home_url' => get_home_url(),
             'ajaxurl' => admin_url('admin-ajax.php'),
             'loading_icon_url' => get_admin_url() . 'images/loading.gif'
         ) );

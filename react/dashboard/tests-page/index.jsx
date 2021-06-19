@@ -17,6 +17,7 @@ class DashboardRoot extends Component {
         }
 
         this.createNewTest = this.createNewTest.bind(this);
+        this.setEntryPoint = this.setEntryPoint.bind(this);
         this.saveAll = this.saveAll.bind(this);
         this.addNewAction = this.addNewAction.bind(this);
         this.modifyEvent = this.modifyEvent.bind(this);
@@ -37,10 +38,17 @@ class DashboardRoot extends Component {
         
         tests[new_key] = {
             title,
+            entry_point: window.avt_object.home_url,
             blueprint: []
         }
 
         this.setState({tests, current_one: new_key}, ()=>this.addNewAction(0));
+    }
+
+    setEntryPoint(url) {
+        let {tests, current_one} = this.state;
+        tests[current_one].entry_point = url;
+        this.setState({tests});
     }
 
     deleteTest() {
@@ -59,7 +67,8 @@ class DashboardRoot extends Component {
         let blueprint = {
             key: getRandomString(),
             action: 'click',
-            xpath: ''
+            xpath: '',
+            comment: ''
         }
 
         tests[current_one].blueprint.splice(index, 0, blueprint);
@@ -159,7 +168,7 @@ class DashboardRoot extends Component {
                         </button>
                     }
                     &nbsp;
-                    <Spinner loading={saving}/>
+                    <Spinner loading={saving || fetching}/>
                 </h3>
                 
                 <div style={{display:'inline-block', float: 'right'}}>
@@ -174,12 +183,13 @@ class DashboardRoot extends Component {
                 </div>
             </div>
             
-            <Spinner loading={fetching} center={true}/>
-
             {
                 (!current_one || !tests[current_one]) ? null :
                 <BlueprintEditor 
+                    entry_point={tests[current_one].entry_point}
+                    test_case={current_one}
                     blueprint={tests[current_one].blueprint} 
+                    setEntryPoint={this.setEntryPoint}
                     addNewAction={this.addNewAction}
                     deleteAction={this.deleteAction} 
                     onChange={this.modifyEvent}/>
