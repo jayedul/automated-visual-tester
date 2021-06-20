@@ -39,9 +39,7 @@ const BlueprintEditor=props=>
             search = search.split('&');
             search.push('avt_test_case='+test_case);
 
-            search = search.filter(s=>s).join('&') + '&avt_test_index=';
-
-            url.search = search;
+            url.search = search.filter(s=>s).join('&');
 
             testing_entry_point = url.toString();
         }
@@ -90,8 +88,8 @@ const BlueprintEditor=props=>
                             !testing_entry_point ? null :
                             <p>
                                 Save the changes and access testing URL from certain browser/tab according to your test case.<br/>
-                                <a href={testing_entry_point+'0'} target="blank">
-                                    {testing_entry_point+'0'}
+                                <a href={testing_entry_point} target="blank">
+                                    {testing_entry_point}
                                 </a>
                             </p>
                         }
@@ -120,9 +118,23 @@ const BlueprintEditor=props=>
 
                         return <tr key={key}>
                             <td>
-                                <span class="dashicons dashicons-trash" title="Delete this action" onClick={()=>deleteAction(index)}></span>
-                                <span class="dashicons dashicons-arrow-up-alt" title="Add action before" onClick={()=>addNewAction(index)}></span>
-                                <span class="dashicons dashicons-arrow-down-alt" title="Add action after" onClick={()=>addNewAction(index+1)}></span>
+                                {
+                                    blueprint.length<=1 ? null :
+                                    <span 
+                                        class="dashicons dashicons-trash" 
+                                        title="Delete this action" 
+                                        onClick={()=>deleteAction(index)}></span>
+                                }
+
+                                <span 
+                                    class="dashicons dashicons-arrow-up-alt" 
+                                    title="Add action before" 
+                                    onClick={()=>addNewAction(index)}></span>
+
+                                <span 
+                                    class="dashicons dashicons-arrow-down-alt" 
+                                    title="Add action after" 
+                                    onClick={()=>addNewAction(index+1)}></span>
                             </td>
                             <td>
                                 <select 
@@ -171,14 +183,7 @@ const BlueprintEditor=props=>
                                     title={comment}
                                     onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}/>
                             </td>
-                            <td>
-                                {
-                                    !testing_entry_point ? null :
-                                    <a href={testing_entry_point+''+index} target="blank">
-                                        Test Here
-                                    </a>
-                                }
-                            </td>
+                            <td></td>
                         </tr>
                     })
                 }

@@ -17,26 +17,32 @@ class DashboardRoot extends Component {
         }
 
         this.createNewTest = this.createNewTest.bind(this);
+        this.deleteTest = this.deleteTest.bind(this);
+        this.renameTest = this.renameTest.bind(this);
+
+        this.importTest = this.importTest.bind(this);
+        this.exportTest = this.exportTest.bind(this);
+
+        this.isValidBlueprint = this.isValidBlueprint.bind(this);
         this.setMetaData = this.setMetaData.bind(this);
         this.saveAll = this.saveAll.bind(this);
         this.addNewAction = this.addNewAction.bind(this);
         this.modifyEvent = this.modifyEvent.bind(this);
         this.deleteAction = this.deleteAction.bind(this);
-        this.deleteTest = this.deleteTest.bind(this);
     }
 
-    createNewTest() {
-        let title = window.prompt('Test Title');
-        title = title.trim();
+    createNewTest( blueprint ) {
+        let title = blueprint ? blueprint.title : window.prompt('Give a title');
+        title = title ? title.trim() : null;
         
-        if(!title.length) {
+        if(!title || !title.length) {
             return;
         }
 
         let {tests} = this.state;
         let new_key = getRandomString();
         
-        tests[new_key] = {
+        tests[new_key] = blueprint || {
             title,
             entry_point: window.avt_object.home_url,
             event_delay: 500,
@@ -59,6 +65,77 @@ class DashboardRoot extends Component {
         let next = Object.keys(tests)[0] || null;
 
         this.setState({tests, current_one: next});
+    }
+
+    renameTest() {
+        let {tests, current_one} = this.state;
+        
+        let name = window.prompt('Rename Test', tests[current_one].title);
+        name = name ? name.trim() : null;
+
+        if(!name || !name.length) {
+            // Empty Name not allowed
+            return;
+        }
+        
+        tests[current_one].title = name;
+        this.setState({tests});
+    }
+
+    isValidBlueprint(blueprint) {
+        return  blueprint.title != undefined && 
+                blueprint.entry_point != undefined && 
+                blueprint.event_delay != undefined && 
+                Array.isArray(blueprint.blueprint) && 
+                blueprint.blueprint.filter(event=>event.action!=undefined).length>0;
+    }
+
+    importTest() {
+        let element = document.createElement('input');
+        element.setAttribute('type', 'file');
+        element.setAttribute('accept', '.json');
+        element.onchange=e=> {
+            console.log(e.currentTarget.files);
+
+            let files = e.currentTarget.files;
+
+            if(!files || !files[0]) {
+                alert('Import Error');
+                return;
+            }
+
+            let f = files[0];
+            var reader = new FileReader();
+
+            reader.onload = e => {
+
+                let json;
+                try{ json = JSON.parse(e.target.result); } catch(e) { }
+
+                if(!json || typeof json!='object' || !this.isValidBlueprint(json)) {
+                    alert('Invalid JSON file');
+                    return;
+                }
+
+                this.createNewTest(json);
+            }
+            
+            reader.readAsText(f);
+        }
+
+        element.click();
+    }
+
+    exportTest() {
+        let {tests, current_one} = this.state;
+
+        let json = JSON.stringify(tests[current_one]);
+        let json_data = "data:text/json;charset=utf-8," + encodeURIComponent(json);
+
+        let element = document.createElement('A');
+        element.setAttribute('href', json_data);
+        element.setAttribute("download", "avt-test.json");
+        element.click();
     }
 
     addNewAction(index) {
@@ -157,7 +234,7 @@ class DashboardRoot extends Component {
                     AVT Tests &nbsp;
                     {
                         fetching ? null :
-                        <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={this.createNewTest}>
+                        <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={()=>this.createNewTest()}>
                             Create New
                         </button>
                     }
@@ -179,7 +256,10 @@ class DashboardRoot extends Component {
                             tests={tests} 
                             current_one={current_one}
                             onChange={current_one=>this.setState({current_one})}
-                            deleteTest={this.deleteTest} />
+                            deleteTest={this.deleteTest} 
+                            renameTest={this.renameTest}
+                            importTest={this.importTest}
+                            exportTest={this.exportTest}/>
                     }
                 </div>
             </div>

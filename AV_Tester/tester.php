@@ -55,16 +55,14 @@ class Tester extends Init{
 
     public function init_tester() {
 
-        if(!isset( $_GET['avt_test_case'], $_GET['avt_test_index'] )) {
+        if(!isset( $_GET['avt_test_case'] )) {
             // Other page
             return;
         }
 
         $base_path = $this->get_data()['base_path'];
         
-        self::$cookie['avt_testing'] = 1;
         self::$cookie['avt_test_key'] = $_GET['avt_test_case'];
-        self::$cookie['avt_test_index'] = $_GET['avt_test_index'];
 
         foreach(self::$cookie as $key => $value) {
             setcookie($key, $value, 0, $base_path);
@@ -75,7 +73,7 @@ class Tester extends Init{
         
         $data = count(self::$cookie) ? self::$cookie : $_COOKIE;
 
-        if(!isset( $data['avt_testing'] ) || !$data['avt_testing']) {
+        if(!isset( $data['avt_test_key'] )) {
             // Tester not initiated
             return;
         }
@@ -85,9 +83,8 @@ class Tester extends Init{
 
     public function add_test_key_to_data($data) {
         $c_data = count(self::$cookie) ? self::$cookie : $_COOKIE;
-        if(isset( $c_data['avt_testing'] ) && $c_data['avt_testing'] ) {
+        if(isset( $c_data['avt_test_key'] ) ) {
             $data['avt_test_key'] = $c_data['avt_test_key'];
-            $data['avt_test_index'] = $c_data['avt_test_index'];
         }
         return $data;
     }

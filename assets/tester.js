@@ -75,7 +75,7 @@ window.jQuery(window).load(function() {
 
                 this.deleteCookie(ck);
                 this.deleteCookie(ck_leave);
-                this.deleteCookie('avt_testing');
+                this.deleteCookie('avt_test_key');
 
                 overlay.hide();
 
@@ -104,7 +104,8 @@ window.jQuery(window).load(function() {
             var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
 
             // Log progress
-            console.log('AVT: ' + event.action + ' - ' + (event.action=='delay' ? event.value : (event.xpath || '')));
+            var console_value = non_element_actions.indexOf( event.action )>-1 ? event.value : (event.xpath || '');
+            console.log('AVT: ' + event.action + ' - ' + console_value);
 
             // Store index for testing across navigated pages
             this.setCookie(ck, parseInt( this.getCookie(ck, '0') )+1);
@@ -167,6 +168,8 @@ window.jQuery(window).load(function() {
 
         this.fetch_blueprint = callback => {
             
+            console.log(window.avt_object.ajaxurl, window.avt_object.avt_test_key);
+
             $.ajax({
                 url: window.avt_object.ajaxurl,
                 type: 'POST',
