@@ -14,6 +14,7 @@ exit;
 
 define( 'AVT_VERSION', '1.9.1' );
 define( 'AVT_FILE', __FILE__ );
+define( 'AVT_DIR', __DIR__ );
 define( 'AVT_URL_BASE',  plugin_dir_url( __FILE__ ) );
 
 spl_autoload_register(function ($class) {

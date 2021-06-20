@@ -1,5 +1,15 @@
 'use strict';
 
+window.avt_ajax_counter = 0;
+
+window.jQuery(document).ajaxStart(function() {
+    window.avt_ajax_counter++;
+});
+
+window.jQuery(document).ajaxStop(function() {
+    window.avt_ajax_counter--;
+});
+
 window.jQuery(window).load(function() {
 
     var $ = window.jQuery;
@@ -9,7 +19,7 @@ window.jQuery(window).load(function() {
     const Tester = function() {
 
         var overlay = $('body')
-                        .append('<style>.avt-tester-highlight{outline:1px dotted red;}</style>')
+                        .append('<style>.avt-tester-highlight{outline:1px dotted red !important;}</style>')
                         .append('<div \
                                     id="avt_overlay_protection" \
                                     style=" display:none; \
@@ -42,27 +52,27 @@ window.jQuery(window).load(function() {
             });
         }
         
-        this.event_looper = blueprints => {
+        this.event_looper = (blueprints, def_delay) => {
 
             if(!blueprints.length || looper_terminated) {
                 if(!looper_terminated) {
-                    console.info('AVT Testing Completed for this page.');
                     this.overlay_protection(false, true);
+                    alert('AVT Testing Completed successfully.');
                 }
                 return;
             }
 
-            var delay = 0;
+            var delay = def_delay;
             var event  = blueprints.shift();
             var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
 
-            console.log('AVT: ' + event.action + ' - ' + (event.xpath || ''));
+            console.log('AVT: ' + event.action + ' - ' + (event.action=='delay' ? event.value : (event.xpath || '')));
 
             if(!element) {
                 if(non_element_actions.indexOf( event.action ) == -1) {
-                    console.error('AVT Target not found: '+ event.xpath);
                     console.warn('Automated Testing Stopped');
                     this.overlay_protection(false, true);
+                    alert('AVT Target not found: '+ event.xpath);
                     return;
                 }
             } else {
@@ -81,16 +91,28 @@ window.jQuery(window).load(function() {
                 case 'click' : element.trigger('click');
                     break;
 
-                case 'delay' : delay = event.millisecond;
+                case 'input' : element.trigger('focus').val(event.value).trigger('input').trigger('change').trigger('blur');
+                    break;
+
+                case 'delay' : delay = parseInt( event.value );
                     break;
             }
-
-            setTimeout(()=> {
+        
+            var ajax_resolver = () => {
                 setTimeout(() => {
+                    if(window.avt_ajax_counter>0) {
+                        console.log('AVT: waiting for '+window.avt_ajax_counter+' request'+(window.avt_ajax_counter>1 ? 's' : '')+' completion. ');
+                        ajax_resolver();
+                        return;
+                    }
+
                     $('.avt-tester-highlight').removeClass('avt-tester-highlight');
-                    this.event_looper(blueprints);
-                }, 3000);
-            }, delay);
+                    this.event_looper(blueprints, def_delay);
+                    
+                }, 1000);
+            }
+
+            (delay && !isNaN(delay) && delay>0) ? setTimeout(ajax_resolver, parseInt( delay )) : ajax_resolver();
         }
 
         this.get_current_session_blueprint = blueprint => {
@@ -135,7 +157,7 @@ window.jQuery(window).load(function() {
             this.fetch_blueprint(data=> {
                 console.info('AVT started: ' + data.title);
                 var session_blueprint = this.get_current_session_blueprint(data.blueprint);
-                this.event_looper(session_blueprint);
+                this.event_looper(session_blueprint, (data.event_delay || 0));
             });
         }
 

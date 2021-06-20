@@ -18,7 +18,7 @@ class Dashboard {
     }
 
     public function tests_dashboard_content() {
-        echo '<div class="wrap" id="avt_dashboard_container"></div>';
+        require str_replace('/', DIRECTORY_SEPARATOR,  AVT_DIR . '/templates/dashboard.php') ;
     }
     
     public function load_dashboard_scripts() {

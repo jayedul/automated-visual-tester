@@ -4,14 +4,24 @@ import './style.scss';
 
 const actions = {
     click: {title: 'Click', xpath: true, value:false},
+    input: {title: 'Text Input', xpath: true, value: true},
     mouseover: {title: 'Mouseover', xpath: true, value:false},
     mousedown: {title: 'Mousedown', xpath: true, value:false},
-    delay: {title: 'Delay', xpath:false, value:true, placeholder:'Millisecond'}
+    delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'}
 }
 
 const BlueprintEditor=props=>
 {
-    let {blueprint, entry_point, test_case, setEntryPoint, addNewAction, deleteAction, onChange} = props;
+    let {
+            blueprint, 
+            entry_point, 
+            event_delay,
+            test_case, 
+            setMetaData, 
+            addNewAction, 
+            deleteAction, 
+            onChange
+        } = props;
 
     let testing_entry_point; 
 
@@ -50,20 +60,33 @@ const BlueprintEditor=props=>
                 </tr>
                 <tr>
                     <td></td>
-                    <td colSpan={4}>
+                    <td colSpan={3}>
                         <input 
                             type="text" 
-                            name="entry_url" 
+                            name="entry_point" 
                             placeholder="Entry Point URL"
                             value={entry_point}
-                            onInput={e=>setEntryPoint(e.currentTarget.value)}/>
+                            onInput={e=>setMetaData(e.currentTarget.name, e.currentTarget.value)}/>
+                    </td>
+                    <td>
+                        <input 
+                            type="number" 
+                            name="event_delay" 
+                            placeholder="Event Delay"
+                            value={event_delay}
+                            onInput={e=>setMetaData(e.currentTarget.name, e.currentTarget.value)}
+                            title="Delay between events. Every event will wait this amount of milliseconds. Useful to understand what's happening on screen."/>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colSpan={4}>
                         <small>The URL you'd like to start automated testing from. <i>Target URL must be under <b>{window.avt_object.home_url}</b></i></small>
-                        
                         {
                             !testing_entry_point ? null :
                             <p>
                                 Save the changes and access testing URL from certain browser/tab according to your test case.<br/>
-                                <i>Please don't run multi instance of test. It causes problem in testing across navigated pages.</i><br/>
                                 <a href={testing_entry_point+'0'} target="blank">
                                     {testing_entry_point+'0'}
                                 </a>
@@ -129,7 +152,7 @@ const BlueprintEditor=props=>
                                 {
                                     !actions[action].value ? null :
                                     <input 
-                                        type="text" 
+                                        type={actions[action].type || 'text'} 
                                         value={value} 
                                         name="value" 
                                         title={value}

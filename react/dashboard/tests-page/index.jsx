@@ -17,7 +17,7 @@ class DashboardRoot extends Component {
         }
 
         this.createNewTest = this.createNewTest.bind(this);
-        this.setEntryPoint = this.setEntryPoint.bind(this);
+        this.setMetaData = this.setMetaData.bind(this);
         this.saveAll = this.saveAll.bind(this);
         this.addNewAction = this.addNewAction.bind(this);
         this.modifyEvent = this.modifyEvent.bind(this);
@@ -39,15 +39,16 @@ class DashboardRoot extends Component {
         tests[new_key] = {
             title,
             entry_point: window.avt_object.home_url,
+            event_delay: 500,
             blueprint: []
         }
 
         this.setState({tests, current_one: new_key}, ()=>this.addNewAction(0));
     }
 
-    setEntryPoint(url) {
+    setMetaData(key, value) {
         let {tests, current_one} = this.state;
-        tests[current_one].entry_point = url;
+        tests[current_one][key] = value;
         this.setState({tests});
     }
 
@@ -187,9 +188,10 @@ class DashboardRoot extends Component {
                 (!current_one || !tests[current_one]) ? null :
                 <BlueprintEditor 
                     entry_point={tests[current_one].entry_point}
+                    event_delay={tests[current_one].event_delay}
                     test_case={current_one}
                     blueprint={tests[current_one].blueprint} 
-                    setEntryPoint={this.setEntryPoint}
+                    setMetaData={this.setMetaData}
                     addNewAction={this.addNewAction}
                     deleteAction={this.deleteAction} 
                     onChange={this.modifyEvent}/>
