@@ -14,22 +14,24 @@ const BlueprintEditor=props=>
     let {blueprint, entry_point, test_case, setEntryPoint, addNewAction, deleteAction, onChange} = props;
 
     let testing_entry_point; 
-    let entry_url = entry_point || window.avt_object.home_url;
 
     try {
-        let url = new URL(entry_url);
+        if(entry_point.indexOf(window.avt_object.home_url)===0) {
 
-        let search = url.search || '';
-        search.indexOf('?')===0 ? search=search.slice(1) : 0;
+            let url = new URL(entry_point);
 
-        search = search.split('&');
-        search.push('avt_test_case='+test_case);
+            let search = url.search || '';
+            search.indexOf('?')===0 ? search=search.slice(1) : 0;
 
-        search = search.filter(s=>s).join('&') + '&avt_test_index=';
+            search = search.split('&');
+            search.push('avt_test_case='+test_case);
 
-        url.search = search;
+            search = search.filter(s=>s).join('&') + '&avt_test_index=';
 
-        testing_entry_point = url.toString();
+            url.search = search;
+
+            testing_entry_point = url.toString();
+        }
     }
     catch(e) {
         
@@ -53,7 +55,7 @@ const BlueprintEditor=props=>
                             type="text" 
                             name="entry_url" 
                             placeholder="Entry Point URL"
-                            value={entry_url}
+                            value={entry_point}
                             onInput={e=>setEntryPoint(e.currentTarget.value)}/>
                         <small>The URL you'd like to start automated testing from. <i>Target URL must be under <b>{window.avt_object.home_url}</b></i></small>
                         
@@ -97,7 +99,11 @@ const BlueprintEditor=props=>
                                 <span class="dashicons dashicons-arrow-down-alt" title="Add action after" onClick={()=>addNewAction(index+1)}></span>
                             </td>
                             <td>
-                                <select name="action" onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}>
+                                <select 
+                                    name="action" 
+                                    title={action} 
+                                    defaultValue={action} 
+                                    onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}>
                                     {
                                         Object.keys(actions).map(action=>{
                                             return <option value={action} key={action}>
@@ -114,6 +120,7 @@ const BlueprintEditor=props=>
                                         type="text" 
                                         value={xpath} 
                                         name="xpath" 
+                                        title={xpath}
                                         onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
                                         placeholder="Xpath"/>
                                 }
@@ -125,6 +132,7 @@ const BlueprintEditor=props=>
                                         type="text" 
                                         value={value} 
                                         name="value" 
+                                        title={value}
                                         onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
                                         placeholder={actions[action].placeholder}/>
                                 }
@@ -134,6 +142,7 @@ const BlueprintEditor=props=>
                                     type="text" 
                                     value={comment} 
                                     name="comment" 
+                                    title={comment}
                                     onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}/>
                             </td>
                             <td>

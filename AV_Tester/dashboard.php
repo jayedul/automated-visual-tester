@@ -11,9 +11,6 @@ class Dashboard {
     public function __construct() {
         add_action('admin_menu', array($this, 'register_menu'));
         add_action('admin_enqueue_scripts', array($this, 'load_dashboard_scripts'));
-
-        add_action('admin_enqueue_scripts', array($this, 'load_tester_scripts'));
-        add_action('wp_enqueue_scripts', array($this, 'load_tester_scripts'));
     }
 
     public function register_menu() {
@@ -29,21 +26,6 @@ class Dashboard {
             return;
         }
 
-        wp_enqueue_script( 'avt-dashboard-js', AVT_URL_BASE . '/assets/dashboard.js', array(), null, true );
-        
-        wp_localize_script( 'avt-dashboard-js', 'avt_object', array(
-            'home_url' => get_home_url(),
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'loading_icon_url' => get_admin_url() . 'images/loading.gif'
-        ) );
-    }
-    
-    public function load_tester_scripts() {
-        if(!isset( $_COOKIE['av_testing'] )) {
-            // Don't enqueue tester if cookie identifier not set
-            // return;
-        }
-
-        // wp_enqueue_script( 'av-testing-initiator-js', AVT_URL_BASE . '/assets/tester.js', array(), null, true );
+        wp_enqueue_script( 'avt-dashboard-js', AVT_URL_BASE . 'assets/dashboard.js', array(), null, true );
     }
 }

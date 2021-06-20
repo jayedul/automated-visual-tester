@@ -1,6 +1,6 @@
 import React from 'react';
 
-const getRandomString = p=>'k'+Math.random().toString(36).substring(2, 5)+new Date().getTime();
+const getRandomString = p=>'k'+Math.random().toString(16).substring(2, 5)+new Date().getTime();
 
 const Spinner=props=>
 {

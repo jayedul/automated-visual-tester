@@ -11,6 +11,15 @@ class Tester {
     function __construct() {
         add_action( 'wp_ajax_avt_get_tests', array($this, 'avt_get_tests') );
         add_action( 'wp_ajax_avt_save_tests', array($this, 'avt_save_tests') );
+
+        add_action( 'wp_ajax_avt_get_blueprint', array($this, 'avt_get_tests') );
+        add_action( 'wp_ajax_nopriv_avt_get_blueprint', array($this, 'avt_get_tests') );
+
+        add_action('init', array($this, 'init_tester'));
+        add_action('admin_enqueue_scripts', array($this, 'load_tester_scripts'));
+        add_action('wp_enqueue_scripts', array($this, 'load_tester_scripts'));
+
+        add_filter( 'avt_object_array', array($this, 'add_test_key_to_data') );
     }
 
     public function avt_get_tests() {
@@ -39,5 +48,33 @@ class Tester {
 
         update_option( $this->option_key, $data );
         wp_send_json_success();
+    }
+
+    public function init_tester() {
+        if(!isset( $_GET['avt_test_case'], $_GET['avt_test_index'] )) {
+            // Other page
+            return;
+        }
+
+        $_SESSION['avt_testing'] = true;
+        $_SESSION['test_key'] = $_GET['avt_test_case'];
+        $_SESSION['test_index'] = $_GET['avt_test_index'];
+    }
+    
+    public function load_tester_scripts() {
+        if(!isset( $_SESSION['avt_testing'] ) || !$_SESSION['avt_testing']) {
+            // Tester not initiated
+            return;
+        }
+
+        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/tester.js', array(), null, true );
+    }
+
+    public function add_test_key_to_data($data) {
+        if(isset( $_SESSION['avt_testing'] ) && $_SESSION['avt_testing'] ) {
+            $data['test_key'] = $_SESSION['test_key'];
+            $data['test_index'] = $_SESSION['test_index'];
+        }
+        return $data;
     }
 }

@@ -4,32 +4,51 @@ window.jQuery(window).load(function() {
 
     var $ = window.jQuery;
 
-    var sample_test = [
-        {
-            action: 'click', // Open pop up form
-            xpath: '//*[@id="tutor-topics-151"]/div[1]/h4/span[1]'
-        },
-        {
-            action: 'click',
-            xpath: '//*[@id="tutor-quiz-152"]/div/a[1]'
-        },
-        {
-            action: 'delay', // Wait for ajax loading of form
-            millisecond: 5000
-        },
-        {
-            action: 'default_page_leave' // Will be navigated to new page, so stop automation for this page, and re-spawn at new page
-        }
-    ];
-
     var non_element_actions = [ 'delay' ];
 
     const Tester = function() {
 
+        var overlay = $('body')
+                        .append('<style>.avt-tester-highlight{outline:1px dotted red;}</style>')
+                        .append('<div \
+                                    id="avt_overlay_protection" \
+                                    style=" display:none; \
+                                            position:fixed; \
+                                            left:0; \
+                                            right:0; \
+                                            top:0; \
+                                            bottom:0; \
+                                            z-index:99999999999">\
+                                </div>')
+                        .find('#avt_overlay_protection');
+
+        var looper_terminated = false;
+
+        this.overlay_protection=(show, suppress)=> {
+
+            if(!show) {
+                if(!suppress) {
+                    looper_terminated = true;
+                    console.info('AVT: Terminated by user');
+                }
+                overlay.hide();
+                return;
+            }
+
+            overlay.show().click(()=> {
+                if( window.confirm('Terminate AVT Testing?') ) {
+                    this.overlay_protection(false);
+                }
+            });
+        }
+        
         this.event_looper = blueprints => {
 
-            if(!blueprints.length) {
-                console.info('AVT Testing Completed for this page.');
+            if(!blueprints.length || looper_terminated) {
+                if(!looper_terminated) {
+                    console.info('AVT Testing Completed for this page.');
+                    this.overlay_protection(false, true);
+                }
                 return;
             }
 
@@ -43,16 +62,19 @@ window.jQuery(window).load(function() {
                 if(non_element_actions.indexOf( event.action ) == -1) {
                     console.error('AVT Target not found: '+ event.xpath);
                     console.warn('Automated Testing Stopped');
+                    this.overlay_protection(false, true);
                     return;
                 }
             } else {
+                
                 element.scrollIntoView({
                     behavior: 'smooth', 
-                    block: 'center'
+                    block: 'center',
+                    inline: 'center'
                 });
-
+                
                 // Replace the JS DOM with jquery DOM
-                element = $(element);
+                element = $(element).addClass('avt-tester-highlight');
             }
 
             switch(event.action) {
@@ -65,6 +87,7 @@ window.jQuery(window).load(function() {
 
             setTimeout(()=> {
                 setTimeout(() => {
+                    $('.avt-tester-highlight').removeClass('avt-tester-highlight');
                     this.event_looper(blueprints);
                 }, 3000);
             }, delay);
@@ -86,14 +109,32 @@ window.jQuery(window).load(function() {
         }
 
         this.fetch_blueprint = callback => {
-            var blueprint = sample_test;
             
-            callback(blueprint);
+            $.ajax({
+                url: window.avt_object.ajaxurl,
+                type: 'POST',
+                data: {action: 'avt_get_blueprint', test_key: window.avt_object.test_key},
+                success: response=> {
+                    if(!response.success || !response.data.blueprint) {
+                        console.error('AVT blueprint error');
+                        return;
+                    }
+
+                    callback(response.data.blueprint)
+                },
+                error: error=> {
+                    console.error('AVT test blueprint loading error.');
+                }
+            });
         }
 
         this.init = () => {
-            this.fetch_blueprint(blueprint=> {
-                var session_blueprint = this.get_current_session_blueprint(blueprint);
+            
+            this.overlay_protection(true);
+
+            this.fetch_blueprint(data=> {
+                console.info('AVT started: ' + data.title);
+                var session_blueprint = this.get_current_session_blueprint(data.blueprint);
                 this.event_looper(session_blueprint);
             });
         }
