@@ -5,9 +5,12 @@ import './style.scss';
 const actions = {
     click: {title: 'Click', xpath: true, value:false},
     input: {title: 'Text Input', xpath: true, value: true},
+    delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
+    page_leave: {title: 'Page Leave', xpath:false, value:false},
+    redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
+
     mouseover: {title: 'Mouseover', xpath: true, value:false},
     mousedown: {title: 'Mousedown', xpath: true, value:false},
-    delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'}
 }
 
 const BlueprintEditor=props=>

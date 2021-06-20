@@ -4,9 +4,10 @@ namespace AV_Tester;
 if ( ! defined( 'ABSPATH' ) )
 exit;
 
-class Tester {
+class Tester extends Init{
 
     private $option_key = 'avt_test_blueprints';
+    private static $cookie = [];
 
     function __construct() {
         add_action( 'wp_ajax_avt_get_tests', array($this, 'avt_get_tests') );
@@ -29,7 +30,9 @@ class Tester {
 
         if( isset( $_POST['test_key'] ) ) {
             if(is_string( $_POST['test_key'] ) && isset( $tests[$_POST['test_key']] )) {
-                wp_send_json_success( array('blueprint' => $tests[$_POST['test_key']] ) );
+                wp_send_json_success( array(
+                    'blueprint' => $tests[$_POST['test_key']]
+                ) );
             }
             wp_send_json_error('Not found');
         }
@@ -51,18 +54,28 @@ class Tester {
     }
 
     public function init_tester() {
+
         if(!isset( $_GET['avt_test_case'], $_GET['avt_test_index'] )) {
             // Other page
             return;
         }
 
-        $_SESSION['avt_testing'] = true;
-        $_SESSION['test_key'] = $_GET['avt_test_case'];
-        $_SESSION['test_index'] = $_GET['avt_test_index'];
+        $base_path = $this->get_data()['base_path'];
+        
+        self::$cookie['avt_testing'] = 1;
+        self::$cookie['avt_test_key'] = $_GET['avt_test_case'];
+        self::$cookie['avt_test_index'] = $_GET['avt_test_index'];
+
+        foreach(self::$cookie as $key => $value) {
+            setcookie($key, $value, 0, $base_path);
+        }
     }
     
     public function load_tester_scripts() {
-        if(!isset( $_SESSION['avt_testing'] ) || !$_SESSION['avt_testing']) {
+        
+        $data = count(self::$cookie) ? self::$cookie : $_COOKIE;
+
+        if(!isset( $data['avt_testing'] ) || !$data['avt_testing']) {
             // Tester not initiated
             return;
         }
@@ -71,9 +84,10 @@ class Tester {
     }
 
     public function add_test_key_to_data($data) {
-        if(isset( $_SESSION['avt_testing'] ) && $_SESSION['avt_testing'] ) {
-            $data['test_key'] = $_SESSION['test_key'];
-            $data['test_index'] = $_SESSION['test_index'];
+        $c_data = count(self::$cookie) ? self::$cookie : $_COOKIE;
+        if(isset( $c_data['avt_testing'] ) && $c_data['avt_testing'] ) {
+            $data['avt_test_key'] = $c_data['avt_test_key'];
+            $data['avt_test_index'] = $c_data['avt_test_index'];
         }
         return $data;
     }

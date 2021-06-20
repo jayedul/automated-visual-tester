@@ -13,11 +13,13 @@ window.jQuery(document).ajaxStop(function() {
 window.jQuery(window).load(function() {
 
     var $ = window.jQuery;
-
-    var non_element_actions = [ 'delay' ];
+    var non_element_actions = [ 'delay', 'page_leave', 'redirect' ];
+    var ck = 'avt_test_index_at_runtime';
+    var ck_leave = 'avt_page_leave_done';
 
     const Tester = function() {
 
+        var looper_terminated = false;
         var overlay = $('body')
                         .append('<style>.avt-tester-highlight{outline:1px dotted red !important;}</style>')
                         .append('<div \
@@ -32,8 +34,37 @@ window.jQuery(window).load(function() {
                                 </div>')
                         .find('#avt_overlay_protection');
 
-        var looper_terminated = false;
+        this.setCookie = (cname, cvalue, exdays) => {
+            var expires = '';
 
+            if(exdays) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                expires = "expires="+d.toUTCString()+';';
+            }
+            
+            document.cookie = cname + "=" + cvalue + ";" + expires + "path="+window.avt_object.base_path;
+        }
+            
+        this.getCookie = (cname, def) => {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return def || "";
+        }
+
+        this.deleteCookie = key => {
+            this.setCookie(key, '', -2);
+        } 
+            
         this.overlay_protection=(show, suppress)=> {
 
             if(!show) {
@@ -41,7 +72,13 @@ window.jQuery(window).load(function() {
                     looper_terminated = true;
                     console.info('AVT: Terminated by user');
                 }
+
+                this.deleteCookie(ck);
+                this.deleteCookie(ck_leave);
+                this.deleteCookie('avt_testing');
+
                 overlay.hide();
+
                 return;
             }
 
@@ -66,7 +103,11 @@ window.jQuery(window).load(function() {
             var event  = blueprints.shift();
             var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
 
+            // Log progress
             console.log('AVT: ' + event.action + ' - ' + (event.action=='delay' ? event.value : (event.xpath || '')));
+
+            // Store index for testing across navigated pages
+            this.setCookie(ck, parseInt( this.getCookie(ck, '0') )+1);
 
             if(!element) {
                 if(non_element_actions.indexOf( event.action ) == -1) {
@@ -96,6 +137,15 @@ window.jQuery(window).load(function() {
 
                 case 'delay' : delay = parseInt( event.value );
                     break;
+
+                case 'redirect' :
+                    window.location.assign(event.value);
+                    this.setCookie(ck_leave, 1);
+                    break;
+
+                case 'page_leave' : 
+                    this.setCookie(ck_leave, 1);
+                    return;
             }
         
             var ajax_resolver = () => {
@@ -115,27 +165,15 @@ window.jQuery(window).load(function() {
             (delay && !isNaN(delay) && delay>0) ? setTimeout(ajax_resolver, parseInt( delay )) : ajax_resolver();
         }
 
-        this.get_current_session_blueprint = blueprint => {
-            var index_offset = 0;
-            var sliced = [];
-
-            for(var i=index_offset; i<blueprint.length; i++) {
-                if(blueprint[i].action == 'default_page_leave') {
-                    break;
-                }
-
-                sliced.push(blueprint[i]);
-            }
-
-            return sliced;
-        }
-
         this.fetch_blueprint = callback => {
             
             $.ajax({
                 url: window.avt_object.ajaxurl,
                 type: 'POST',
-                data: {action: 'avt_get_blueprint', test_key: window.avt_object.test_key},
+                data: {
+                    action: 'avt_get_blueprint', 
+                    test_key: window.avt_object.avt_test_key
+                },
                 success: response=> {
                     if(!response.success || !response.data.blueprint) {
                         console.error('AVT blueprint error');
@@ -155,9 +193,19 @@ window.jQuery(window).load(function() {
             this.overlay_protection(true);
 
             this.fetch_blueprint(data=> {
+
+                var index = this.getCookie(ck, 0);
+
+                if(index>0 && !this.getCookie(ck_leave)) {
+                    // Test aborted in navigated page
+                    return;
+                }
+                 
+                console.log(index);
                 console.info('AVT started: ' + data.title);
-                var session_blueprint = this.get_current_session_blueprint(data.blueprint);
-                this.event_looper(session_blueprint, (data.event_delay || 0));
+                index>0 ? console.info('AVT Resumed at index: '+index) : 0;
+
+                this.event_looper(data.blueprint.slice(index), (data.event_delay || 0));
             });
         }
 
