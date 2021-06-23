@@ -112,7 +112,7 @@ window.jQuery(window).load(function() {
 
             if(!element) {
                 if(non_element_actions.indexOf( event.action ) == -1) {
-                    console.warn('Automated Testing Stopped');
+                    console.log('Automated Testing Stopped');
                     this.overlay_protection(false, true);
                     alert('AVT Target not found: '+ event.xpath);
                     return;
@@ -138,7 +138,11 @@ window.jQuery(window).load(function() {
                 case 'mouseup' :
                 case 'input' : 
                 case 'change' : 
+                case 'dblclick' : 
                 case 'click' : element.trigger(event.action);
+                    break;
+
+                case 'submit' : element.submit();
                     break;
 
                 case 'input_text' : element.trigger('focus').val(event.value).trigger('input').trigger('change').trigger('blur');
@@ -180,7 +184,7 @@ window.jQuery(window).load(function() {
 
         this.fetch_blueprint = callback => {
             
-            console.log(window.avt_object.ajaxurl, window.avt_object.avt_test_key);
+            console.log('AVT: Requesting ' + window.avt_object.avt_test_key);
 
             $.ajax({
                 url: window.avt_object.ajaxurl,
@@ -191,14 +195,16 @@ window.jQuery(window).load(function() {
                 },
                 success: response=> {
                     if(!response.success || !response.data.blueprint) {
-                        console.error('AVT blueprint error');
+                        console.log('AVT blueprint error');
                         return;
                     }
+
+                    console.log('AVT: Blueprint Response Successful');
 
                     callback(response.data.blueprint)
                 },
                 error: error=> {
-                    console.error('AVT test blueprint loading error.');
+                    console.log('AVT test blueprint loading error.');
                 }
             });
         }
@@ -213,6 +219,8 @@ window.jQuery(window).load(function() {
 
                 if(index>0 && !this.getCookie(ck_leave)) {
                     // Test aborted in navigated page
+                    console.log('Test aborted due to invalid page leave');
+                    console.log('Please delete these two cookie and try again. ', ck, ck_leave);
                     return;
                 }
                  

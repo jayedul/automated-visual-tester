@@ -4,6 +4,7 @@ import './style.scss';
 
 const actions = {
     click: {title: 'Click', xpath: true, value:false},
+    dblclick: {title: 'Double Click', xpath: true, value:false},
     focus: {title: 'Focus', xpath: true, value: false},
     blur: {title: 'Blur', xpath: true, value: false},
     input: {title: 'Input', xpath: true, value: false},
@@ -11,6 +12,7 @@ const actions = {
     mouseout: {title: 'Mouseout', xpath: true, value:false},
     mousedown: {title: 'Mousedown', xpath: true, value:false},
     mouseup: {title: 'Mouseup', xpath: true, value:false},
+    submit: {title: 'Submit Form', xpath: true, value: false},
 
     input_text: {title: 'Input Text', xpath: true, value: true},
     check: {title: 'Check', xpath: true, value: false},
@@ -122,9 +124,9 @@ const BlueprintEditor=props=>
                 {
                     blueprint.map((event, index)=> {
                         
-                        let {key, action, xpath, value, comment} = event;
+                        let {key, action, xpath, value, comment} = event || {};
 
-                        return <tr key={key}>
+                        return (!action || !actions[action]) ? null : <tr key={key}>
                             <td>
                                 {
                                     blueprint.length<=1 ? null :
