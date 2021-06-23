@@ -4,13 +4,21 @@ import './style.scss';
 
 const actions = {
     click: {title: 'Click', xpath: true, value:false},
-    input: {title: 'Text Input', xpath: true, value: true},
+    focus: {title: 'Focus', xpath: true, value: false},
+    blur: {title: 'Blur', xpath: true, value: false},
+    input: {title: 'Input', xpath: true, value: false},
+    mouseover: {title: 'Mouseover', xpath: true, value:false},
+    mouseout: {title: 'Mouseout', xpath: true, value:false},
+    mousedown: {title: 'Mousedown', xpath: true, value:false},
+    mouseup: {title: 'Mouseup', xpath: true, value:false},
+
+    input_text: {title: 'Input Text', xpath: true, value: true},
+    check: {title: 'Check', xpath: true, value: false},
+    uncheck: {title: 'UnCheck', xpath: true, value: false},
+    
     delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
     page_leave: {title: 'Page Leave', xpath:false, value:false},
     redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
-
-    mouseover: {title: 'Mouseover', xpath: true, value:false},
-    mousedown: {title: 'Mousedown', xpath: true, value:false},
 }
 
 const BlueprintEditor=props=>
@@ -143,7 +151,7 @@ const BlueprintEditor=props=>
                                     defaultValue={action} 
                                     onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}>
                                     {
-                                        Object.keys(actions).map(action=>{
+                                        Object.keys(actions).sort().map(action=>{
                                             return <option value={action} key={action}>
                                                 {actions[action].title}
                                             </option>

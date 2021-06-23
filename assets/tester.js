@@ -130,10 +130,22 @@ window.jQuery(window).load(function() {
             }
 
             switch(event.action) {
-                case 'click' : element.trigger('click');
+                case 'focus' :
+                case 'blur' :
+                case 'mouseout' :
+                case 'mouseover' :
+                case 'mousedown' : 
+                case 'mouseup' :
+                case 'input' : 
+                case 'change' : 
+                case 'click' : element.trigger(event.action);
                     break;
 
-                case 'input' : element.trigger('focus').val(event.value).trigger('input').trigger('change').trigger('blur');
+                case 'input_text' : element.trigger('focus').val(event.value).trigger('input').trigger('change').trigger('blur');
+                    break;
+
+                case 'check' :
+                case 'uncheck' : element.prop('checked', event.action=='check').trigger('change');
                     break;
 
                 case 'delay' : delay = parseInt( event.value );
