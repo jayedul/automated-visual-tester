@@ -1,8 +1,7 @@
 <?php
 /* 
     Plugin Name: Automated Visual Tester
-    Author: TeleShare
-    Author URI: teleshareapp.com
+    Author: JK
     Description: Test website functionalities on browser automatically.
     Version: 1.0.0
     License: GPLv2 or later
@@ -12,7 +11,7 @@
 if ( ! defined( 'ABSPATH' ) )
 exit;
 
-define( 'AVT_VERSION', '1.9.1' );
+define( 'AVT_VERSION', '1.0.0' );
 define( 'AVT_FILE', __FILE__ );
 define( 'AVT_DIR', __DIR__ );
 define( 'AVT_URL_BASE',  plugin_dir_url( __FILE__ ) );
