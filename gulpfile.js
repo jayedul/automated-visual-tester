@@ -4,7 +4,7 @@ var gulp = require("gulp"),
 	wpPot = require('gulp-wp-pot'),
 	clean = require("gulp-clean"),
 	zip = require("gulp-zip"),
-	build_name = 'automated-visual-tester-' + require('./package.json').version + '.zip';
+	build_name = 'av-tester-' + require('./package.json').version + '.zip';
 
 var onError = function (err) {
 	notify.onError({
@@ -53,6 +53,7 @@ gulp.task("copy", function () {
 			"!./build/**",
 			"!./node_modules/**",
 			"!./react/**",
+			"!./assets/dashboard.js.LICENSE.txt",
 			"!./**/*.zip",
 			"!.github",
 			"!./gulpfile.js",
@@ -65,7 +66,7 @@ gulp.task("copy", function () {
 			"!./webpack.config.js",
             "!.babelrc"
 		])
-		.pipe(gulp.dest("build/automated-visual-tester/"));
+		.pipe(gulp.dest("build/av-tester/"));
 });
 
 gulp.task("make-zip", function () {

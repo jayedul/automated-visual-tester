@@ -1,16 +1,18 @@
 'use strict';
 
-window.avt_ajax_counter = 0;
 
-window.jQuery(document).ajaxStart(function() {
-    window.avt_ajax_counter++;
-});
-
-window.jQuery(document).ajaxStop(function() {
-    window.avt_ajax_counter--;
-});
 
 window.jQuery(window).load(function() {
+
+    var avt_ajax_counter = 0;
+
+    window.jQuery(document).ajaxStart(function() {
+        avt_ajax_counter++;
+    });
+
+    window.jQuery(document).ajaxStop(function() {
+        avt_ajax_counter--;
+    });
 
     var $ = window.jQuery;
     var non_element_actions = [ 'delay', 'page_leave', 'redirect' ];
@@ -104,8 +106,7 @@ window.jQuery(window).load(function() {
             var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
 
             // Log progress
-            var console_value = non_element_actions.indexOf( event.action )>-1 ? event.value : (event.xpath || '');
-            console.log('AVT: ' + event.action + ' - ' + console_value);
+            console.log('AVT: ' + event.action + ' - ' + (event.comment || ''));
 
             // Store index for testing across navigated pages
             this.setCookie(ck, parseInt( this.getCookie(ck, '0') )+1);
@@ -167,8 +168,8 @@ window.jQuery(window).load(function() {
         
             var ajax_resolver = () => {
                 setTimeout(() => {
-                    if(window.avt_ajax_counter>0) {
-                        console.log('AVT: waiting for '+window.avt_ajax_counter+' request'+(window.avt_ajax_counter>1 ? 's' : '')+' completion. ');
+                    if(avt_ajax_counter>0) {
+                        console.log('AVT: waiting for '+avt_ajax_counter+' request'+(avt_ajax_counter>1 ? 's' : '')+' completion. ');
                         ajax_resolver();
                         return;
                     }
@@ -195,11 +196,9 @@ window.jQuery(window).load(function() {
                 },
                 success: response=> {
                     if(!response.success || !response.data.blueprint) {
-                        console.log('AVT blueprint error');
+                        console.log(response.data.message || 'Blueprint Request Error');
                         return;
                     }
-
-                    console.log('AVT: Blueprint Response Successful');
 
                     callback(response.data.blueprint)
                 },

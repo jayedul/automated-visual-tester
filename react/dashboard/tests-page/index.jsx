@@ -185,7 +185,8 @@ class DashboardRoot extends Component {
                 blueprints: JSON.stringify(this.state.tests)
             },
             success: response=> {
-                alert(response.success ? 'Saved Successfully' : 'Could not save');
+                var message = (response.data || {}).message || 'Error in Saving';
+                alert(message);
             },
             error: error => {
                 alert('Request Error');

@@ -6,20 +6,12 @@ if ( ! defined( 'ABSPATH' ) )
 exit;
 
 class Init {
-    public function __construct() {
-        add_action( 'init', array( $this, 'load_textdomain' ));
-    }
-    
     public function start() {
         new Dashboard;
         new Tester;
 
         add_action('admin_enqueue_scripts', array($this, 'load_data'));
         add_action('wp_enqueue_scripts', array($this, 'load_data'));
-    }
-
-    public function load_textdomain() {
-        load_plugin_textdomain( 'av-tester', false, AVT_FILE . '/languages' );
     }
 
     public function get_data() {

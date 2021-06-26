@@ -13,6 +13,7 @@ const TestSelection=props=> {
         } = props;
 
     let keys = Object.keys(tests);
+    let verticalAlign = {verticalAlign: 'middle'};
 
     return !keys.length ? null : 
     <>
@@ -20,26 +21,26 @@ const TestSelection=props=> {
             class="dashicons dashicons-upload" 
             title="Export Tests" 
             onClick={importTest} 
-            style={{verticalAlign: 'middle'}}></span>
+            style={verticalAlign}></span>
 
         <span 
             class="dashicons dashicons-download" 
             title="Export Tests" 
             onClick={exportTest} 
-            style={{verticalAlign: 'middle'}}></span>
+            style={verticalAlign}></span>
             
 
         <span 
             class="dashicons dashicons-edit" 
             title="ReName" 
             onClick={renameTest} 
-            style={{verticalAlign: 'middle'}}></span>
+            style={verticalAlign}></span>
 
         <span 
             class="dashicons dashicons-trash" 
             title="Delete this test" 
             onClick={deleteTest} 
-            style={{verticalAlign: 'middle'}}></span>
+            style={verticalAlign}></span>
 
         <select name="avt-test-selection" onChange={e=>onChange(e.target.value)} value={current_one}>
             {

@@ -34,18 +34,24 @@ class Tester extends Init{
                     'blueprint' => $tests[$_POST['test_key']]
                 ) );
             }
-            wp_send_json_error('Not found');
+            wp_send_json_error( array('message' => 'Test Not found' ) );
         }
         
         wp_send_json_success( array( 'tests' => (object)$tests ) );
     }
 
     public function avt_save_tests() {
+
+        if(!current_user_can( 'manage_options' )) {
+            wp_send_json_error( array('message' => 'Access Forbidden' ) );
+            return;
+        }
+
         $data = isset( $_POST['blueprints'] ) ? $_POST['blueprints'] : '';
         $data = @json_decode( stripslashes( $data ), true );
 
         if(!is_array( $data )) {
-            wp_send_json_error( 'Invalid Blueprints Array' );
+            wp_send_json_error( array('message' => 'Invalid Blueprints Array' ) );
             return;
         }
 
@@ -78,8 +84,8 @@ class Tester extends Init{
             return;
         }
 
-        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/tester.js', array(), null, true );
-    }
+        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/tester.js', array( 'jquery' ), null, true );
+	}
 
     public function add_test_key_to_data($data) {
         $c_data = count(self::$cookie) ? self::$cookie : $_COOKIE;

@@ -14,7 +14,7 @@ const Spinner=props=>
 
     let visibility = loading ? 'visible' : 'hidden';
 
-    let spin=<img src={window.avt_object.loading_icon_url}/>
+    let spin=<img style={{display: 'inline-block'}} src={window.avt_object.loading_icon_url}/>
 
     let s=space ? <span style={{visibility, verticalAlign:'middle'}}>&nbsp;{spin}&nbsp;</span> : spin;
 
