@@ -22,42 +22,46 @@ const TestSelection=props=> {
     let keys = Object.keys(tests);
     let verticalAlign = {verticalAlign: 'middle'};
 
-    return !keys.length ? null : 
-    <>
+    return <>
         <span 
             class="dashicons dashicons-upload" 
             title="Import Tests" 
             onClick={importTest} 
             style={verticalAlign}></span>
 
-        <span 
-            class="dashicons dashicons-download" 
-            title="Export Tests" 
-            onClick={exportTest} 
-            style={verticalAlign}></span>
-            
-        <span 
-            class="dashicons dashicons-edit" 
-            title="ReName" 
-            onClick={renameTest} 
-            style={verticalAlign}></span>
+        {
+            !keys.length ? null : 
+            <>
+                <span 
+                    class="dashicons dashicons-download" 
+                    title="Export Tests" 
+                    onClick={exportTest} 
+                    style={verticalAlign}></span>
+                    
+                <span 
+                    class="dashicons dashicons-edit" 
+                    title="ReName" 
+                    onClick={renameTest} 
+                    style={verticalAlign}></span>
 
-        <span 
-            class="dashicons dashicons-trash" 
-            title="Delete this test" 
-            onClick={deleteTest} 
-            style={verticalAlign}></span>
+                <span 
+                    class="dashicons dashicons-trash" 
+                    title="Delete this test" 
+                    onClick={deleteTest} 
+                    style={verticalAlign}></span>
 
-        <select name="avt-test-selection" onChange={e=>onChange(e.target.value)} value={current_one}>
-            {
-                keys.map(key=> {
-                    let {title} = tests[key];
-                    return <option key={key} value={key}>
-                        {title}
-                    </option>
-                })
-            }
-        </select>
+                <select name="avt-test-selection" onChange={e=>onChange(e.target.value)} value={current_one}>
+                    {
+                        keys.map(key=> {
+                            let {title} = tests[key];
+                            return <option key={key} value={key}>
+                                {title}
+                            </option>
+                        })
+                    }
+                </select>
+            </>
+        }
     </>
 }
 

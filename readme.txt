@@ -1,4 +1,4 @@
-=== AV Tester - WordPress Automation ===
+=== Automated Visual Tester ===
 Contributors: JK
 Tags: testing, automation
 Requires at least: 5.3
@@ -12,7 +12,7 @@ An automated testing plugin for WordPress CMS that simulates basic user interact
 
 == Description ==
 
-AV Tester is a user interaction simulator plugin for WordPress that doesn't require any special setup. Just install as simple as other plugins and start testing. Under the hood jQuery is used to trigger user interactions like click, input text and so on. 
+AV Tester is a user interaction simulator plugin for WordPress that doesn't require any special setup. Just install as simply as other plugins and start testing.
 
 To run test, all you have to do is define a series of user actions in dashboard that would be simulated on browser. So you can track if there is any missing things or bugs in new releases of your WordPress plugin or theme.
 

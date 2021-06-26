@@ -1,8 +1,8 @@
 <?php
 /* 
-    Plugin Name: AV Tester - WordPress Automation
+    Plugin Name: Automated Visual Tester
     Plugin URI: https://github.com/jayedul/av-tester
-    Description: An automated testing plugin for WordPress CMS that simulates basic user interactions on browser without any crazy setup.
+    Description: An automated testing plugin that simulates basic user interactions on browser without any crazy setup.
     Author: JK
     Author URI: https://profiles.wordpress.org/jayedul/
     Version: 1.0.0

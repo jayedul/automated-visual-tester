@@ -1,5 +1,4 @@
 ### AV Tester - WordPress Automation
--------
 An automated testing plugin for WordPress CMS that simulates basic user interactions on browser without any crazy setup.
 
 To run automated tests, all you have to do is define a series of events in AVT dashboard.

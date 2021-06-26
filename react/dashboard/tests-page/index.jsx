@@ -56,7 +56,7 @@ class DashboardRoot extends Component {
             blueprint: []
         }
 
-        this.setState({tests, current_one: new_key}, ()=>this.addNewAction(0));
+        this.setState({tests, current_one: new_key}, ()=>(!blueprint ? this.addNewAction(0) : 0) );
     }
 
     /**
