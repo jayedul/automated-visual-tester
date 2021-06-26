@@ -1,21 +1,10 @@
 'use strict';
 
-
-
 window.jQuery(window).load(function() {
-
-    var avt_ajax_counter = 0;
-
-    window.jQuery(document).ajaxStart(function() {
-        avt_ajax_counter++;
-    });
-
-    window.jQuery(document).ajaxStop(function() {
-        avt_ajax_counter--;
-    });
 
     var $ = window.jQuery;
     var non_element_actions = [ 'delay', 'page_leave', 'redirect' ];
+    var avt_event = [{avt_event: true}];
     var ck = 'avt_test_index_at_runtime';
     var ck_leave = 'avt_page_leave_done';
 
@@ -91,19 +80,19 @@ window.jQuery(window).load(function() {
             });
         }
         
-        this.event_looper = (blueprints, def_delay) => {
+        this.event_looper = (blueprints, def_delay, has_next_page) => {
 
-            if(!blueprints.length || looper_terminated) {
-                if(!looper_terminated) {
-                    this.overlay_protection(false, true);
-                    alert('AVT Testing Completed successfully.');
-                }
+            if(looper_terminated) {
                 return;
             }
 
             var delay = def_delay;
             var event  = blueprints.shift();
             var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
+
+            if(!blueprints.length && !has_next_page) {
+                this.overlay_protection(false, true);
+            }
 
             // Log progress
             console.log('AVT: ' + event.action + ' - ' + (event.comment || ''));
@@ -130,6 +119,11 @@ window.jQuery(window).load(function() {
                 element = $(element).addClass('avt-tester-highlight');
             }
 
+            if(!has_next_page) {
+                this.overlay_protection(false, true);
+                console.log('Testing Completed');
+            }
+        
             switch(event.action) {
                 case 'focus' :
                 case 'blur' :
@@ -140,17 +134,30 @@ window.jQuery(window).load(function() {
                 case 'input' : 
                 case 'change' : 
                 case 'dblclick' : 
-                case 'click' : element.trigger(event.action);
+                case 'click' : 
+                    if(event.action == 'click') {
+                        var DOM = element.get(0);
+                        if(DOM.tagName=='A') {
+                            DOM.click();
+                            break;
+                        }
+                    } 
+                    element.trigger(event.action, avt_event);
                     break;
 
                 case 'submit' : element.submit();
                     break;
 
-                case 'input_text' : element.trigger('focus').val(event.value).trigger('input').trigger('change').trigger('blur');
+                case 'input_text' : element
+                                        .trigger('focus', avt_event)
+                                        .val(event.value)
+                                        .trigger('input', avt_event)
+                                        .trigger('change', avt_event)
+                                        .trigger('blur', avt_event);
                     break;
 
                 case 'check' :
-                case 'uncheck' : element.prop('checked', event.action=='check').trigger('change');
+                case 'uncheck' : element.prop('checked', event.action=='check').trigger('change', avt_event);
                     break;
 
                 case 'delay' : delay = parseInt( event.value );
@@ -165,17 +172,21 @@ window.jQuery(window).load(function() {
                     this.setCookie(ck_leave, 1);
                     return;
             }
+
+            if(!has_next_page) {
+                return;
+            }
         
             var ajax_resolver = () => {
                 setTimeout(() => {
-                    if(avt_ajax_counter>0) {
-                        console.log('AVT: waiting for '+avt_ajax_counter+' request'+(avt_ajax_counter>1 ? 's' : '')+' completion. ');
+                    if(window.avt_ajax_counter>0) {
+                        console.log('AVT: waiting for '+window.avt_ajax_counter+' request'+(window.avt_ajax_counter>1 ? 's' : '')+' completion. ');
                         ajax_resolver();
                         return;
                     }
 
                     $('.avt-tester-highlight').removeClass('avt-tester-highlight');
-                    this.event_looper(blueprints, def_delay);
+                    this.event_looper(blueprints, def_delay, has_next_page);
                     
                 }, 1000);
             }
@@ -218,16 +229,26 @@ window.jQuery(window).load(function() {
 
                 if(index>0 && !this.getCookie(ck_leave)) {
                     // Test aborted in navigated page
-                    console.log('Test aborted due to invalid page leave');
-                    console.log('Please delete these two cookie and try again. ', ck, ck_leave);
+                    if(confirm('Invalid AVT session. Start over?')) {
+                        this.deleteCookie(ck);
+                        this.deleteCookie(ck_leave);
+                        window.location.reload();
+                    }
                     return;
                 }
                  
-                console.log(index);
                 console.info('AVT started: ' + data.title);
                 index>0 ? console.info('AVT Resumed at index: '+index) : 0;
 
-                this.event_looper(data.blueprint.slice(index), (data.event_delay || 0));
+                var remaining_tests = data.blueprint.slice(index);
+                var has_next_page = data.blueprint.length > remaining_tests.length;
+                if(!remaining_tests || !remaining_tests.length) {
+                    console.log('Empty Test Case. Testing Stopped.');
+                    this.overlay_protection(false);
+                    return;
+                }
+
+                this.event_looper(remaining_tests, (data.event_delay || 0), has_next_page);
             });
         }
 

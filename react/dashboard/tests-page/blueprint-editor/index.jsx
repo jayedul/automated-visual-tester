@@ -1,7 +1,9 @@
 import React from 'react';
-
 import './style.scss';
 
+/**
+ * Define the supported event list as object
+ */
 const actions = {
     click: {title: 'Click', xpath: true, value:false},
     dblclick: {title: 'Double Click', xpath: true, value:false},
@@ -20,9 +22,16 @@ const actions = {
     
     delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
     page_leave: {title: 'Page Leave', xpath:false, value:false},
-    redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
+    redirect: {title: 'Redirect', value:true, placeholder: 'URL'}
 }
 
+/**
+ * @return component
+ * 
+ * Render the event management editor
+ * 
+ * @since v1.0.0
+ */
 const BlueprintEditor=props=>
 {
     let {
@@ -39,6 +48,7 @@ const BlueprintEditor=props=>
     let testing_entry_point; 
 
     try {
+        // Check if the entry point URL is under the same home url
         if(entry_point.indexOf(window.avt_object.home_url)===0) {
 
             let url = new URL(entry_point);

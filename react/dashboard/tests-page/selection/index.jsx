@@ -1,5 +1,12 @@
 import React from 'react';
 
+/**
+ * @return component
+ * 
+ * Render test selection dropdown
+ * 
+ * @since v1.0.0
+ */
 const TestSelection=props=> {
 
     let {

@@ -13,6 +13,13 @@ class Dashboard {
         add_action('admin_enqueue_scripts', array($this, 'load_dashboard_scripts'));
     }
 
+    /**
+     * @return void
+     * 
+     * Register one and only dashboard root level menu
+     * 
+     * @since v1.0.0
+     */
     public function register_menu() {
         add_menu_page(
             __('AV Tester', $this->page_slug), 
@@ -28,10 +35,24 @@ class Dashboard {
         ) );
     }
 
+    /**
+     * @return void
+     * 
+     * HTML for dashboard page
+     * 
+     * @since v1.0.0
+     */
     public function tests_dashboard_content() {
         require str_replace('/', DIRECTORY_SEPARATOR,  AVT_DIR . '/templates/dashboard.php') ;
     }
     
+    /**
+     * @return void
+     * 
+     * Load JS for the dashboard
+     * 
+     * @since v1.0.0
+     */
     public function load_dashboard_scripts() {
         if( !isset($_GET['page']) || $_GET['page']!=$this->page_slug ) {
             return;

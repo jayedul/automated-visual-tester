@@ -31,6 +31,13 @@ class DashboardRoot extends Component {
         this.deleteAction = this.deleteAction.bind(this);
     }
 
+    /**
+     * @return void
+     * 
+     * Create new test and add to the list
+     * 
+     * @since v1.0.0
+     */
     createNewTest( blueprint ) {
         let title = blueprint ? blueprint.title : window.prompt('Give a title');
         title = title ? title.trim() : null;
@@ -52,12 +59,26 @@ class DashboardRoot extends Component {
         this.setState({tests, current_one: new_key}, ()=>this.addNewAction(0));
     }
 
+    /**
+     * @return void
+     * 
+     * Set meta data for currently selected test
+     * 
+     * @since v1.0.0
+     */
     setMetaData(key, value) {
         let {tests, current_one} = this.state;
         tests[current_one][key] = value;
         this.setState({tests});
     }
 
+    /**
+     * @return void
+     * 
+     * Delete currently selected test
+     * 
+     * @since v1.0.0
+     */
     deleteTest() {
         let {tests, current_one} = this.state;
         delete tests[current_one];
@@ -67,6 +88,13 @@ class DashboardRoot extends Component {
         this.setState({tests, current_one: next});
     }
 
+    /**
+     * @return void
+     * 
+     * Change current test name
+     * 
+     * @since v1.0.0
+     */
     renameTest() {
         let {tests, current_one} = this.state;
         
@@ -82,6 +110,13 @@ class DashboardRoot extends Component {
         this.setState({tests});
     }
 
+    /**
+     * @return boolean
+     * 
+     * Check if the provided blueprint is valid
+     * 
+     * @since v1.0.0
+     */
     isValidBlueprint(blueprint) {
         return  blueprint.title != undefined && 
                 blueprint.entry_point != undefined && 
@@ -90,6 +125,13 @@ class DashboardRoot extends Component {
                 blueprint.blueprint.filter(event=>event.action!=undefined).length>0;
     }
 
+    /**
+     * @return void
+     * 
+     * Import Test from JSON file
+     * 
+     * @since v1.0.0
+     */
     importTest() {
         let element = document.createElement('input');
         element.setAttribute('type', 'file');
@@ -126,6 +168,13 @@ class DashboardRoot extends Component {
         element.click();
     }
 
+    /**
+     * @return void
+     * 
+     * Export test in JSON format file
+     * 
+     * @since v1.0.0
+     */
     exportTest() {
         let {tests, current_one} = this.state;
 
@@ -138,6 +187,13 @@ class DashboardRoot extends Component {
         element.click();
     }
 
+    /**
+     * @return void
+     * 
+     * Add action to currently selected test
+     * 
+     * @since v1.0.0
+     */
     addNewAction(index) {
 
         let {tests, current_one} = this.state;
@@ -154,12 +210,26 @@ class DashboardRoot extends Component {
         this.setState({tests});
     }
 
+    /**
+     * @return void
+     * 
+     * Delete action from currently selected test
+     * 
+     * @since v1.0.0
+     */
     deleteAction(index) {
         let {tests, current_one} = this.state;
         tests[current_one].blueprint.splice(index, 1);
         this.setState({tests});
     }
 
+    /**
+     * @return void
+     * 
+     * Modify specific action under currently selected test
+     * 
+     * @since v1.0.0
+     */
     modifyEvent(key, name, value) {
 
         let {tests, current_one} = this.state;
@@ -174,6 +244,13 @@ class DashboardRoot extends Component {
         this.setState({tests});
     }
 
+    /**
+     * @return void
+     * 
+     * Save all the changes together
+     * 
+     * @since v1.0.0
+     */
     saveAll() {
         this.setState({saving: true});
 
@@ -197,6 +274,13 @@ class DashboardRoot extends Component {
         });
     }
 
+    /**
+     * @return void
+     * 
+     * Load test cases from server on component mount
+     * 
+     * @since v1.0.0
+     */
     componentDidMount() {
         window.jQuery.ajax({
             url: window.avt_object.ajaxurl,
@@ -226,6 +310,13 @@ class DashboardRoot extends Component {
         })
     }
 
+    /**
+     * @return component
+     * 
+     * Render the UI for Test Cases and Event management
+     * 
+     * @since v1.0.0
+     */
     render() {
         let {tests, current_one, fetching, saving} = this.state;
 
@@ -235,7 +326,7 @@ class DashboardRoot extends Component {
                     AVT Tests &nbsp;
                     {
                         fetching ? null :
-                        <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={()=>this.createNewTest()}>
+                        <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={(e, d)=>(console.log(e, d),this.createNewTest())}>
                             Create New
                         </button>
                     }

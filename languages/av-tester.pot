@@ -13,24 +13,28 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: AV_Tester/tester.php:79
+msgid "Saved Successfully"
+msgstr ""
+
 #: templates/dashboard.php:3
-msgid "Instruction"
+msgid "Instructions"
 msgstr ""
 
 #: templates/dashboard.php:6
-msgid "Please make sure the Xpath you input here always points to correct element."
+msgid "Please make sure the Xpath you input here always points to the correct element."
 msgstr ""
 
 #: templates/dashboard.php:9
-msgid "The testing initiator URL you'd get is meant to be copied and accessed from certain browser/tab/user-state according to your test case."
+msgid "The testing initiator URL you'd get is meant to be copied and accessed from certain browser/tab/user-state based on your test case."
 msgstr ""
 
 #: templates/dashboard.php:12
-msgid "Please don't run multiple tests at the same time or multi instance of a test in a single browser session. "
+msgid "Please don't access other URL in the same browser session during testing."
 msgstr ""
 
 #: templates/dashboard.php:13
-msgid "Both causes problem in testing across navigated pages."
+msgid "It is forbidden in favour of testing across navigated pages using browser session identifier cookie."
 msgstr ""
 
 #: templates/dashboard.php:16
@@ -38,11 +42,11 @@ msgid "Don't forget to add the 'Page Leave' event after the one the page would r
 msgstr ""
 
 #: templates/dashboard.php:17
-msgid "So the tester can run further test on the new page."
+msgid "So the tester can detect new page and run remaining test on that."
 msgstr ""
 
 #: templates/dashboard.php:20
-msgid "Redirect event is meant to use only and only for the URLs that are under %s."
+msgid "Redirect event is meant to be used only for the URLs under %s."
 msgstr ""
 
 #: templates/dashboard.php:21
@@ -50,21 +54,5 @@ msgid "So the tester will be able to resume on the redirected page too."
 msgstr ""
 
 #: templates/dashboard.php:24
-msgid "All the events is set to be triggered by native jQuery. "
-msgstr ""
-
-#: templates/dashboard.php:25
-msgid "So the visual tester might not work as expectation in some cases such as native browser events like Drag & Drop."
-msgstr ""
-
-#: templates/dashboard.php:28
-msgid "By default AVT waits for only jQuery ajax requests completion that immediately starts on JS events like 'click'."
-msgstr ""
-
-#: templates/dashboard.php:29
-msgid "If you use other request package than jQuery, then just increment/decrement <code>window.avt_ajax_counter</code> global variable on request start/complete."
-msgstr ""
-
-#: templates/dashboard.php:32
 msgid "You can see the testing log in browser console panel."
 msgstr ""
