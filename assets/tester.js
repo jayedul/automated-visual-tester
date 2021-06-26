@@ -4,6 +4,7 @@ window.jQuery(window).load(function() {
 
     var $ = window.jQuery;
     var non_element_actions = [ 'delay', 'page_leave', 'redirect' ];
+    var navigation_events = ['page_leave', 'redirect'];
     var avt_event = [{avt_event: true}];
     var ck = 'avt_test_index_at_runtime';
     var ck_leave = 'avt_page_leave_done';
@@ -56,23 +57,28 @@ window.jQuery(window).load(function() {
             this.setCookie(key, '', -2);
         } 
             
-        this.overlay_protection=(show, suppress)=> {
+        this.overlay_protection=(show, organic)=> {
 
             if(!show) {
-                if(!suppress) {
+
+                // Show message if terminated manually
+                if(!organic) {
                     looper_terminated = true;
                     console.info('AVT: Terminated by user');
                 }
 
+                // Delete identifier cookies
                 this.deleteCookie(ck);
                 this.deleteCookie(ck_leave);
                 this.deleteCookie('avt_test_key');
 
+                // And hide the overlay since testing stopped.
                 overlay.hide();
-
                 return;
             }
 
+            // Show the overlay and add terminator event listener
+            // It can be shown only at first load, so no way of multiple event attachment
             overlay.show().click(()=> {
                 if( window.confirm('Terminate AVT Testing?') ) {
                     this.overlay_protection(false);
@@ -90,15 +96,8 @@ window.jQuery(window).load(function() {
             var event  = blueprints.shift();
             var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
 
-            if(!blueprints.length && !has_next_page) {
-                this.overlay_protection(false, true);
-            }
-
             // Log progress
             console.log('AVT: ' + event.action + ' - ' + (event.comment || ''));
-
-            // Store index for testing across navigated pages
-            this.setCookie(ck, parseInt( this.getCookie(ck, '0') )+1);
 
             if(!element) {
                 if(non_element_actions.indexOf( event.action ) == -1) {
@@ -119,11 +118,14 @@ window.jQuery(window).load(function() {
                 element = $(element).addClass('avt-tester-highlight');
             }
 
-            if(!has_next_page) {
+            if(!blueprints.length || !has_next_page) {
                 this.overlay_protection(false, true);
                 console.log('Testing Completed');
+            } else {
+                // Store index for testing across navigated pages
+                this.setCookie(ck, parseInt( this.getCookie(ck, '0') )+1);
             }
-        
+
             switch(event.action) {
                 case 'focus' :
                 case 'blur' :
@@ -220,31 +222,49 @@ window.jQuery(window).load(function() {
         }
 
         this.init = () => {
-            
-            this.overlay_protection(true);
+
+            if(!this.getCookie('avt_test_key')) {
+                return;
+            }
 
             this.fetch_blueprint(data=> {
 
-                var index = this.getCookie(ck, 0);
+                var start_at = this.getCookie(ck, 0);
 
-                if(index>0 && !this.getCookie(ck_leave)) {
-                    // Test aborted in navigated page
-                    if(confirm('Invalid AVT session. Start over?')) {
-                        this.deleteCookie(ck);
-                        this.deleteCookie(ck_leave);
+                // This block means there is incomplete test but page leave event was not fired
+                if(start_at>0 && !this.getCookie(ck_leave)) {
+                    this.overlay_protection(false, true);
+
+                    // Attempt start over if the URL is testing entrypoint
+                    if(window.location.href == data.entry_point && confirm('AVT session expired. Start over?')) {
                         window.location.reload();
                     }
                     return;
                 }
-                 
-                console.info('AVT started: ' + data.title);
-                index>0 ? console.info('AVT Resumed at index: '+index) : 0;
 
-                var remaining_tests = data.blueprint.slice(index);
-                var has_next_page = data.blueprint.length > remaining_tests.length;
+                // Show the overlay now as testing getting started
+                this.overlay_protection(true);
+
+                console.info('AVT Testing: ' + data.title);
+                start_at>0 ? console.info('AVT Resumed at index: '+start_at) : 0;
+
+                var remaining_tests = data.blueprint.slice(start_at);
+                var next_breakpoint;
+
+                for(var i=0; i<remaining_tests.length; i++) {
+                    var {action, key} = remaining_tests[i];
+
+                    if(navigation_events.indexOf(action)) {
+                        next_breakpoint = key;
+                        break;
+                    }
+                }
+
+                var has_next_page = next_breakpoint && ((remaining_tests[remaining_tests.length-1] || {}).key!=next_breakpoint);
+                
                 if(!remaining_tests || !remaining_tests.length) {
                     console.log('Empty Test Case. Testing Stopped.');
-                    this.overlay_protection(false);
+                    this.overlay_protection(false, true);
                     return;
                 }
 

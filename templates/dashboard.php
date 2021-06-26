@@ -23,5 +23,8 @@
         <li>
             <?php _e( 'You can see the testing log in browser console panel.' , 'av-tester' ); ?>
         </li>
+        <li>
+            See <a href="https://github.com/jayedul/av-tester" target="_blank" target="_blank" rel="nofollow noopener">developer documentation</a>.
+        </li>
     </ul>
 </div>

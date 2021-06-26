@@ -26,7 +26,7 @@ const TestSelection=props=> {
     <>
         <span 
             class="dashicons dashicons-upload" 
-            title="Export Tests" 
+            title="Import Tests" 
             onClick={importTest} 
             style={verticalAlign}></span>
 
@@ -36,7 +36,6 @@ const TestSelection=props=> {
             onClick={exportTest} 
             style={verticalAlign}></span>
             
-
         <span 
             class="dashicons dashicons-edit" 
             title="ReName" 

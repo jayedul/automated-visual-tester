@@ -58,6 +58,7 @@ gulp.task("copy", function () {
 			"!.github",
 			"!./gulpfile.js",
 			"!./readme.md",
+			"!./README.md",
 			"!.DS_Store",
 			"!./**/.DS_Store",
 			"!./LICENSE.txt",
