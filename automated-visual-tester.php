@@ -1,13 +1,13 @@
 <?php
 /* 
     Plugin Name: Automated Visual Tester
-    Plugin URI: https://github.com/jayedul/av-tester
+    Plugin URI: https://github.com/jayedul/automated-visual-tester
     Description: An automated testing plugin that simulates basic user interactions on browser without any crazy setup.
     Author: JK
     Author URI: https://profiles.wordpress.org/jayedul/
     Version: 1.0.0
     License: GPLv2 or later
-    Text Domain: av-tester
+    Text Domain: automated-visual-tester
 */
 
 if ( ! defined( 'ABSPATH' ) )
@@ -22,7 +22,7 @@ define( 'AVT_URL_BASE',  plugin_dir_url( __FILE__ ) );
 
 // Load text domain
 add_action( 'init', function() {
-	load_plugin_textdomain( 'av-tester', false, basename( dirname( __FILE__ ) ) . '/languages' );
+	load_plugin_textdomain( 'automated-visual-tester', false, basename( dirname( __FILE__ ) ) . '/languages' );
 });
 
 // Create autoloader for classes

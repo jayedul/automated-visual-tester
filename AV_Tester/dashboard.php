@@ -6,7 +6,7 @@ exit;
 
 class Dashboard {
 
-    private $page_slug = 'av-tester';
+    private $page_slug = 'automated-visual-tester';
 
     public function __construct() {
         add_action('admin_menu', array($this, 'register_menu'));
@@ -54,7 +54,8 @@ class Dashboard {
      * @since v1.0.0
      */
     public function load_dashboard_scripts() {
-        if( !isset($_GET['page']) || $_GET['page']!=$this->page_slug ) {
+        if( !isset( $_GET['page'] ) || $_GET['page'] != $this->page_slug ) {
+            // No need to load JS in other pages than AV Tester dashboard
             return;
         }
 

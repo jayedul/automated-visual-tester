@@ -1,5 +1,5 @@
 {
-  "name": "av-tester",
+  "name": "automated-visual-tester",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jayedul/av-tester.git"
+    "url": "git+https://github.com/jayedul/automated-visual-tester.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jayedul/av-tester/issues"
+    "url": "https://github.com/jayedul/automated-visual-tester/issues"
   },
-  "homepage": "https://github.com/jayedul/av-tester#readme",
+  "homepage": "https://github.com/jayedul/automated-visual-tester#readme",
   "dependencies": {
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.5",

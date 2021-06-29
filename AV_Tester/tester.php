@@ -39,15 +39,19 @@ class Tester extends Init{
         $tests = get_option( $this->option_key, array() );
         !is_array( $tests ) ? $tests = array() : 0;
 
-        if( isset( $_POST['test_key'] ) ) {
-            if(is_string( $_POST['test_key'] ) && isset( $tests[$_POST['test_key']] )) {
+        $test_key = sanitize_text_field( isset( $_POST['test_key'] ) ? $_POST['test_key'] : '' );
+
+        // Send specific test blueprint if key is provided
+        if( $test_key ) {
+            if( isset( $tests[$test_key] )) {
                 wp_send_json_success( array(
-                    'blueprint' => $tests[$_POST['test_key']]
+                    'blueprint' => $tests[$test_key]
                 ) );
             }
             wp_send_json_error( array('message' => 'Test Not found' ) );
         }
         
+        // Otherwise provide all tests as array
         wp_send_json_success( array( 'tests' => (object)$tests ) );
     }
 
@@ -66,17 +70,49 @@ class Tester extends Init{
             return;
         }
 
+        // Parse blueprint JSON string to array in error suppress mode
         $data = isset( $_POST['blueprints'] ) ? $_POST['blueprints'] : '';
         $data = @json_decode( stripslashes( $data ), true );
 
-        // Check if it is array
+        // Now check if it is valid array
         if(!is_array( $data )) {
             wp_send_json_error( array('message' => 'Invalid Blueprints Array' ) );
             return;
         }
 
+        // Sanitize and validate test blueprint
+        $keys_per_test = array( 'blueprint', 'entry_point', 'event_delay', 'title' );
+        foreach($data as $test_key => $test_blueprint) {
+
+            $test_title = isset( $test_blueprint['title'] ) ? sanitize_text_field( $test_blueprint['title'] ) : $test_key . ' - Untitled';
+            $data[$test_key]['title'] = $test_title;
+
+            // Check if all keys exists and no extra key
+            $test_keys = array_keys( $test_blueprint );
+            if( count (array_diff( $test_keys, $keys_per_test ) )>0 || 
+                count( array_diff( $keys_per_test, $test_keys ) )>0 || 
+                !is_array( $test_blueprint['blueprint'] ) ) {
+
+                wp_send_json_error( array( 'message' => sprintf( __('Invalid blueprint structure in the test %s', 'automated-visual-tester'), $test_title ) ) );
+                return;
+            }
+
+            // Validate entry point URL
+            if(!filter_var( $test_blueprint['entry_point'], FILTER_VALIDATE_URL ) || !(strpos($test_blueprint['entry_point'], get_home_url())===0)) {
+                wp_send_json_error( array( 'message' => sprintf( __('Invalid entry point URL in the test %s', 'automated-visual-tester'), $test_title ) ) );
+                return;
+            }
+
+            // Check if event delay is numeric and at least 0
+            if(!is_numeric($test_blueprint['event_delay']) || $test_blueprint['event_delay']<0) {
+                wp_send_json_error( array( 'message' => sprintf( __('Invalid event delay in the test %s', 'automated-visual-tester'), $test_title ) ) );
+                return;
+            }
+        }
+        
+        // Now save the test blueprint data as option since it doesn't need any fancy relation
         update_option( $this->option_key, $data );
-        wp_send_json_success(array('message' => __('Saved Successfully', 'av-tester')));
+        wp_send_json_success(array('message' => __('Saved Successfully', 'automated-visual-tester')));
     }
 
     /**
@@ -94,8 +130,7 @@ class Tester extends Init{
         }
 
         $base_path = $this->get_data()['base_path'];
-        
-        self::$cookie['avt_test_key'] = $_GET['avt_test_case'];
+        self::$cookie['avt_test_key'] = sanitize_text_field( $_GET['avt_test_case'] ) ;
 
         foreach(self::$cookie as $key => $value) {
             setcookie($key, $value, 0, $base_path);
@@ -110,8 +145,8 @@ class Tester extends Init{
      * @since v1.0.0
      */
     private function is_in_testing() {
-        $data = count(self::$cookie) ? self::$cookie : $_COOKIE;
-        return isset( $data['avt_test_key'] );
+        $data = count( self::$cookie ) ? self::$cookie : $_COOKIE;
+        return !empty( $data['avt_test_key'] ) && is_string( $data['avt_test_key'] );
     }
     
     /**
@@ -166,9 +201,9 @@ class Tester extends Init{
      * @since v1.0.0
      */
     public function add_test_key_to_data($data) {
-        $c_data = count(self::$cookie) ? self::$cookie : $_COOKIE;
+        $c_data = count( self::$cookie ) ? self::$cookie : $_COOKIE;
         if(isset( $c_data['avt_test_key'] ) ) {
-            $data['avt_test_key'] = $c_data['avt_test_key'];
+            $data['avt_test_key'] = sanitize_text_field( $c_data['avt_test_key'] );
         }
         return $data;
     }

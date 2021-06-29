@@ -13,7 +13,19 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: AV_Tester/tester.php:79
+#: AV_Tester/tester.php:96
+msgid "Invalid blueprint structure in the test %s"
+msgstr ""
+
+#: AV_Tester/tester.php:102
+msgid "Invalid entry point URL in the test %s"
+msgstr ""
+
+#: AV_Tester/tester.php:108
+msgid "Invalid event delay in the test %s"
+msgstr ""
+
+#: AV_Tester/tester.php:115
 msgid "Saved Successfully"
 msgstr ""
 

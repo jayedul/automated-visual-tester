@@ -18,4 +18,4 @@ To run test, all you have to do is define a series of user actions in dashboard 
 
 == Contribution ==
 Here is the public repository of this plugin on github if you are interested to contribute to...
-https://github.com/jayedul/av-tester 
+https://github.com/jayedul/automated-visual-tester 

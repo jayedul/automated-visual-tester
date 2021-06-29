@@ -4,7 +4,7 @@ var gulp = require("gulp"),
 	wpPot = require('gulp-wp-pot'),
 	clean = require("gulp-clean"),
 	zip = require("gulp-zip"),
-	build_name = 'av-tester-' + require('./package.json').version + '.zip';
+	build_name = 'automated-visual-tester-' + require('./package.json').version + '.zip';
 
 var onError = function (err) {
 	notify.onError({
@@ -23,10 +23,10 @@ gulp.task('makepot', function () {
 			errorHandler: onError
 		}))
 		.pipe(wpPot({
-			domain: 'av-tester',
+			domain: 'automated-visual-tester',
 			package: 'Automated Visual Tester'
 		}))
-		.pipe(gulp.dest('languages/av-tester.pot'));
+		.pipe(gulp.dest('languages/automated-visual-tester.pot'));
 });
 
 /**
@@ -67,7 +67,7 @@ gulp.task("copy", function () {
 			"!./webpack.config.js",
             "!.babelrc"
 		])
-		.pipe(gulp.dest("build/av-tester/"));
+		.pipe(gulp.dest("build/automated-visual-tester/"));
 });
 
 gulp.task("make-zip", function () {
