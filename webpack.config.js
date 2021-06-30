@@ -20,7 +20,7 @@ module.exports = {
     extensions: ['*', '.js', '.jsx']
   },
   output: {
-    path: __dirname + '/assets',
+    path: __dirname + '/assets/js',
     publicPath: '/',
     filename: 'dashboard.js'
   },
@@ -28,7 +28,7 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin()
   ],
   devServer: {
-    contentBase: './public/js',
+    contentBase: './assets/js',
     hot: true
   }
 };

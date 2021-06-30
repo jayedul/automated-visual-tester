@@ -48,11 +48,38 @@ class Tester extends Init{
                     'blueprint' => $tests[$test_key]
                 ) );
             }
-            wp_send_json_error( array('message' => 'Test Not found' ) );
+            wp_send_json_error( array('message' => __('Test Not found', 'automated-visual-tester') ) );
         }
         
         // Otherwise provide all tests as array
         wp_send_json_success( array( 'tests' => (object)$tests ) );
+    }
+    
+    /**
+     * @return array
+     * 
+     * Sanitize array key abd values recursively
+     * 
+     * @since v1.0.0
+     */
+    private function sanitize_recursive( $array ) {
+
+        $new_array = array();
+
+        foreach($array as $key => $value) {
+
+            $key = is_numeric( $key ) ? $key : sanitize_text_field( $key );
+
+            if(is_array( $value )) {
+                $new_array[$key] = $this->sanitize_recursive( $value );
+                continue;
+            }
+
+            // Leave numeric as it is
+            $new_array[$key] = is_numeric( $value ) ? $value : sanitize_text_field( $value );
+        }
+
+        return $array;
     }
 
     /**
@@ -66,7 +93,7 @@ class Tester extends Init{
 
         // Check if user can manage options before saving test cases
         if(!current_user_can( 'manage_options' )) {
-            wp_send_json_error( array('message' => 'Access Forbidden' ) );
+            wp_send_json_error( array('message' => __('Access Forbidden', 'automated-visual-tester') ) );
             return;
         }
 
@@ -76,15 +103,18 @@ class Tester extends Init{
 
         // Now check if it is valid array
         if(!is_array( $data )) {
-            wp_send_json_error( array('message' => 'Invalid Blueprints Array' ) );
+            wp_send_json_error( array('message' => __('Invalid Blueprints Array', 'automated-visual-tester') ) );
             return;
+        } else {
+            // Sanitize blueprint array recursively
+            $data = $this->sanitize_recursive($data);
         }
 
         // Sanitize and validate test blueprint
         $keys_per_test = array( 'blueprint', 'entry_point', 'event_delay', 'title' );
         foreach($data as $test_key => $test_blueprint) {
 
-            $test_title = isset( $test_blueprint['title'] ) ? sanitize_text_field( $test_blueprint['title'] ) : $test_key . ' - Untitled';
+            $test_title = !empty( $test_blueprint['title'] ) ? $test_blueprint['title'] : $test_key . ' - Untitled';
             $data[$test_key]['title'] = $test_title;
 
             // Check if all keys exists and no extra key
@@ -152,29 +182,14 @@ class Tester extends Init{
     /**
      * @return void
      * 
-     * Load ajax call counter JS code in dashboard and frontend if testing session active 
+     * Load ajax call counter JS as early as possible
      * 
      * @since v1.0.0
      */
     public function load_ajax_counter() {
-        
-        if(!$this->is_in_testing()) {
-            return;
+        if($this->is_in_testing()) {
+            echo '<script src="' . AVT_URL_BASE . 'assets/js/ajax-counter.js"></script>';
         }
-
-        ?>
-        <script>
-            window.avt_ajax_counter = 0;
-
-            window.jQuery(document).ajaxStart(function() {
-                window.avt_ajax_counter++;
-            });
-
-            window.jQuery(document).ajaxStop(function() {
-                window.avt_ajax_counter--;
-            });
-        </script>
-        <?php
     }
 
     /**
@@ -190,7 +205,7 @@ class Tester extends Init{
             return;
         }
 
-        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/tester.js', array( 'jquery' ), null, true );
+        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/js/tester.js', array( 'jquery' ), null, true );
 	}
 
     /**

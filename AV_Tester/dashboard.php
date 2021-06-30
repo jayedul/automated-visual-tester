@@ -59,6 +59,6 @@ class Dashboard {
             return;
         }
 
-        wp_enqueue_script( 'avt-dashboard-js', AVT_URL_BASE . 'assets/dashboard.js', array( 'jquery' ), null, true );
+        wp_enqueue_script( 'avt-dashboard-js', AVT_URL_BASE . 'assets/js/dashboard.js', array( 'jquery' ), null, true );
 	}
 }

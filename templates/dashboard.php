@@ -21,10 +21,10 @@
             <?php _e( 'So the tester will be able to resume on the redirected page too.' , 'automated-visual-tester' ); ?>
         </li>
         <li>
-            <?php _e( 'You can see the testing log in browser console panel.' , 'automated-visual-tester' ); ?>
+            <?php _e( 'You can see the testing log in browser console panel. And it is recommended in fact.' , 'automated-visual-tester' ); ?>
         </li>
         <li>
-            See <a href="https://github.com/jayedul/automated-visual-tester" target="_blank" target="_blank" rel="nofollow noopener">developer documentation</a>.
+            <a href="https://github.com/jayedul/automated-visual-tester" target="_blank" target="_blank" rel="nofollow noopener"><?php _e('Read developer documentation on GitHub.', 'automated-visual-tester'); ?></a>
         </li>
     </ul>
 </div>

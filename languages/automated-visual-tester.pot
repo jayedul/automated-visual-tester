@@ -13,19 +13,31 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: AV_Tester/tester.php:51
+msgid "Test Not found"
+msgstr ""
+
 #: AV_Tester/tester.php:96
+msgid "Access Forbidden"
+msgstr ""
+
+#: AV_Tester/tester.php:106
+msgid "Invalid Blueprints Array"
+msgstr ""
+
+#: AV_Tester/tester.php:126
 msgid "Invalid blueprint structure in the test %s"
 msgstr ""
 
-#: AV_Tester/tester.php:102
+#: AV_Tester/tester.php:132
 msgid "Invalid entry point URL in the test %s"
 msgstr ""
 
-#: AV_Tester/tester.php:108
+#: AV_Tester/tester.php:138
 msgid "Invalid event delay in the test %s"
 msgstr ""
 
-#: AV_Tester/tester.php:115
+#: AV_Tester/tester.php:145
 msgid "Saved Successfully"
 msgstr ""
 
@@ -66,5 +78,9 @@ msgid "So the tester will be able to resume on the redirected page too."
 msgstr ""
 
 #: templates/dashboard.php:24
-msgid "You can see the testing log in browser console panel."
+msgid "You can see the testing log in browser console panel. And it is recommended in fact."
+msgstr ""
+
+#: templates/dashboard.php:27
+msgid "Read developer documentation on GitHub."
 msgstr ""

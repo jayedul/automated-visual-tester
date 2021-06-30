@@ -53,7 +53,7 @@ gulp.task("copy", function () {
 			"!./build/**",
 			"!./node_modules/**",
 			"!./react/**",
-			"!./assets/dashboard.js.LICENSE.txt",
+			"!./assets/js/dashboard.js.LICENSE.txt",
 			"!./**/*.zip",
 			"!.github",
 			"!./gulpfile.js",
