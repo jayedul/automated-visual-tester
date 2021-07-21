@@ -111,19 +111,14 @@ class Tester extends Init{
         }
 
         // Sanitize and validate test blueprint
-        $keys_per_test = array( 'blueprint', 'entry_point', 'event_delay', 'title' );
         foreach($data as $test_key => $test_blueprint) {
 
             $test_title = !empty( $test_blueprint['title'] ) ? $test_blueprint['title'] : $test_key . ' - Untitled';
             $data[$test_key]['title'] = $test_title;
 
             // Check if all keys exists and no extra key
-            $test_keys = array_keys( $test_blueprint );
-            if( count (array_diff( $test_keys, $keys_per_test ) )>0 || 
-                count( array_diff( $keys_per_test, $test_keys ) )>0 || 
-                !is_array( $test_blueprint['blueprint'] ) ) {
-
-                wp_send_json_error( array( 'message' => sprintf( __('Invalid blueprint structure in the test %s', 'automated-visual-tester'), $test_title ) ) );
+            if( !is_array( $test_blueprint['blueprint'] ) ) {
+                wp_send_json_error( array( 'message' => sprintf( __('Invalid blueprint array in the test %s', 'automated-visual-tester'), $test_title ) ) );
                 return;
             }
 

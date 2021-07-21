@@ -3,13 +3,36 @@
 window.jQuery(window).load(function() {
 
     var $ = window.jQuery;
-    var non_element_actions = [ 'delay', 'page_leave', 'redirect' ];
     var navigation_events = ['page_leave', 'redirect'];
     var avt_event = [{avt_event: true}];
     var ck = 'avt_test_index_at_runtime';
     var ck_leave = 'avt_page_leave_done';
 
     const Tester = function() {
+
+        // This object must be same as the one in ~/react/dashboard/tests-page/blueprint-editor/index.jsx
+        const actions = {
+            click: {title: 'Click', xpath: true, value:false},
+            dblclick: {title: 'Double Click', xpath: true, value:false},
+            focus: {title: 'Focus', xpath: true, value: false},
+            blur: {title: 'Blur', xpath: true, value: false},
+            input: {title: 'Input', xpath: true, value: false},
+            mouseover: {title: 'Mouseover', xpath: true, value:false},
+            mouseout: {title: 'Mouseout', xpath: true, value:false},
+            mousedown: {title: 'Mousedown', xpath: true, value:false},
+            mouseup: {title: 'Mouseup', xpath: true, value:false},
+            submit: {title: 'Submit Form', xpath: true, value: false},
+        
+            input_text: {title: 'Input Text', xpath: true, value: true},
+            check: {title: 'Check', xpath: true, value: false},
+            uncheck: {title: 'UnCheck', xpath: true, value: false},
+            select: {title: 'Select Dropdown', xpath: true, value: true, placeholder:'Value to select'},
+            
+            delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
+            page_leave: {title: 'Page Leave', xpath:false, value:false},
+            redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
+            reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'}
+        }
 
         var looper_terminated = false;
         var overlay = $('body')
@@ -56,7 +79,9 @@ window.jQuery(window).load(function() {
         this.deleteCookie = key => {
             this.setCookie(key, '', -2);
         } 
-            
+
+        this.getRandomString = p=>'k'+Math.random().toString(16).substring(2, 5)+new Date().getTime();
+
         this.overlay_protection=(show, organic)=> {
 
             if(!show) {
@@ -86,7 +111,7 @@ window.jQuery(window).load(function() {
             });
         }
         
-        this.event_looper = (blueprints, def_delay, has_next_page) => {
+        this.event_looper = (blueprints, def_delay, pointer, has_next_page) => {
 
             if(looper_terminated) {
                 return;
@@ -94,28 +119,48 @@ window.jQuery(window).load(function() {
 
             var delay = def_delay;
             var event  = blueprints.shift();
-            var element =  event.xpath ? document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue : null;
+
+            // Prepare element
+            var element = null;
+            if(event.xpath) {
+                if(pointer=='xpath') {
+                    var DOM = document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    DOM ? element = $(DOM) : 0;
+                } else {
+                    var el = $(event.xpath);
+                    el.length ? element = el : 0;
+                    // In fact css selector. 
+                    // But we have to use the key 'xpath' for backward compatibillity.
+                    // Because initially selector pointer was not available in this app. 
+                }
+            }
 
             // Log progress
             console.log('AVT: ' + event.action + ' - ' + (event.comment || ''));
 
             if(!element) {
-                if(non_element_actions.indexOf( event.action ) == -1) {
-                    console.log('Automated Testing Stopped');
-                    this.overlay_protection(false, true);
-                    alert('AVT Target not found: '+ event.xpath);
+                if( this.actions[event.action].xpath ) {
+                    if(event.skippable) {
+                        console.log('AVT Target not found: '+ event.xpath);
+                        console.log('Skipping element as it is marked as skippable');
+                        this.event_looper(blueprints, def_delay, pointer, has_next_page);
+                    } else {
+                        console.log('Automated Testing Stopped');
+                        this.overlay_protection(false, true);
+                        alert('AVT Target not found: '+ event.xpath);
+                    }
                     return;
                 }
             } else {
                 
-                element.scrollIntoView({
+                element.get(0).scrollIntoView({
                     behavior: 'smooth', 
                     block: 'center',
                     inline: 'center'
                 });
                 
                 // Replace the JS DOM with jquery DOM
-                element = $(element).addClass('avt-tester-highlight');
+                element.addClass('avt-tester-highlight');
             }
 
             if(!blueprints.length || !has_next_page) {
@@ -136,30 +181,48 @@ window.jQuery(window).load(function() {
                 case 'input' : 
                 case 'change' : 
                 case 'dblclick' : 
-                case 'click' : 
-                    if(event.action == 'click') {
-                        var DOM = element.get(0);
-                        if(DOM.tagName=='A') {
-                            DOM.click();
-                            break;
+                case 'click' : element.each(function() {
+                        if(event.action == 'click') {
+                            var DOM = $(this).get(0);
+                            if(DOM.tagName=='A') {
+                                DOM.click();
+                                return;
+                            }
                         }
-                    } 
-                    element.trigger(event.action, avt_event);
+                        $(this).trigger(event.action, avt_event);
+                    });
                     break;
 
-                case 'submit' : element.submit();
+                case 'submit' : element.each(function() {
+                        $(this).submit();
+                    });
                     break;
 
-                case 'input_text' : element
-                                        .trigger('focus', avt_event)
-                                        .val(event.value)
-                                        .trigger('input', avt_event)
-                                        .trigger('change', avt_event)
-                                        .trigger('blur', avt_event);
+                case 'input_text' : element.each(function() {
+                        $(this)
+                            .trigger('focus', avt_event)
+                            .val(event.value)
+                            .trigger('input', avt_event)
+                            .trigger('change', avt_event)
+                            .trigger('blur', avt_event);
+                    });               
+                    break;
+
+                case 'select' : element.each(function() {
+                        $(this)
+                            .trigger('focus')
+                            .val(event.value)
+                            .trigger('change')
+                            .trigger('blur');
+                    });         
                     break;
 
                 case 'check' :
-                case 'uncheck' : element.prop('checked', event.action=='check').trigger('change', avt_event);
+                case 'uncheck' : element.each(function() {
+                        $(this)
+                            .prop('checked', event.action=='check')
+                            .trigger('change', avt_event);
+                    });
                     break;
 
                 case 'delay' : delay = parseInt( event.value );
@@ -188,7 +251,7 @@ window.jQuery(window).load(function() {
                     }
 
                     $('.avt-tester-highlight').removeClass('avt-tester-highlight');
-                    this.event_looper(blueprints, def_delay, has_next_page);
+                    this.event_looper(blueprints, def_delay, pointer, has_next_page);
                     
                 }, 1000);
             }
@@ -221,6 +284,45 @@ window.jQuery(window).load(function() {
             });
         }
 
+        this.expand_eusable_sequence = blueprints => {
+
+            var reusage = [];
+
+
+            console.log(blueprints);
+            
+
+            // Loop through the array and collect reusable map
+            for(var i=0; i<blueprints.length; i++) {
+
+                var blueprint = blueprints[i];
+
+                if(blueprint.action!='reuse') {
+                    continue;
+                }
+
+                var range = blueprint.value.split('-');
+                var from = parseInt(range[0]) - 1;
+                var to = parseInt(range[1]) - 1;
+
+                var sliced_blueprint = blueprints.slice(from, to+1).map(b=>{ 
+                    b.key = this.getRandomString(); 
+                    return b;
+                });
+
+                reusage.push([i, sliced_blueprint]);
+            }
+
+            console.log(blueprints);
+            
+            // Loop through the reusage map and expand the main blueprint array accordingly
+            for(var i=0; i<reusage.length; i++) {
+                // blueprints.splice(reusage[i][0], 1, ...reusage[i][1]);
+            }
+
+            console.log(blueprints);
+        }
+
         this.init = () => {
 
             if(!this.getCookie('avt_test_key')) {
@@ -248,7 +350,9 @@ window.jQuery(window).load(function() {
                 console.info('AVT Testing: ' + data.title);
                 start_at>0 ? console.info('AVT Resumed at index: '+start_at) : 0;
 
-                var remaining_tests = data.blueprint.slice(start_at);
+                var expanded = this.expand_eusable_sequence(data.blueprint);
+                return;
+                var remaining_tests = expanded.slice(start_at);
                 var next_breakpoint;
 
                 for(var i=0; i<remaining_tests.length; i++) {
@@ -268,7 +372,7 @@ window.jQuery(window).load(function() {
                     return;
                 }
 
-                this.event_looper(remaining_tests, (data.event_delay || 0), has_next_page);
+                this.event_looper(remaining_tests, (data.event_delay || 0), (data.pointer || 'xpath'), has_next_page);
             });
         }
 

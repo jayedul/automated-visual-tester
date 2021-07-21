@@ -19,10 +19,12 @@ const actions = {
     input_text: {title: 'Input Text', xpath: true, value: true},
     check: {title: 'Check', xpath: true, value: false},
     uncheck: {title: 'UnCheck', xpath: true, value: false},
+    select: {title: 'Select Dropdown', xpath: true, value: true, placeholder:'Value to select'},
     
     delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
     page_leave: {title: 'Page Leave', xpath:false, value:false},
-    redirect: {title: 'Redirect', value:true, placeholder: 'URL'}
+    redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
+    reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'}
 }
 
 /**
@@ -38,6 +40,7 @@ const BlueprintEditor=props=>
             blueprint, 
             entry_point, 
             event_delay,
+            pointer,
             test_case, 
             setMetaData, 
             addNewAction, 
@@ -69,19 +72,10 @@ const BlueprintEditor=props=>
     }
 
     return <> 
-        <table class="avt-event-list">
+        <table class="avt-event-list test-meta-data">
             <tbody>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td colSpan={3}>
+                    <td>
                         <input 
                             type="text" 
                             name="entry_point" 
@@ -98,11 +92,30 @@ const BlueprintEditor=props=>
                             onInput={e=>setMetaData(e.currentTarget.name, e.currentTarget.value)}
                             title="Delay between events. Every event will wait this amount of milliseconds. Useful to understand what's happening on screen."/>
                     </td>
-                    <td></td>
+                    <td title="Element pointer type">
+                        <label>
+                            <input 
+                                type="radio" 
+                                name="pointer" 
+                                value="xpath" 
+                                defaultChecked={pointer=='xpath'}
+                                onChange={e=>e.currentTarget.checked ? setMetaData(e.currentTarget.name, e.currentTarget.value) : 0}/>
+                            Xpath
+                        </label>
+                        &nbsp;&nbsp;
+                        <label>
+                            <input 
+                                type="radio" 
+                                name="pointer" 
+                                value="selector" 
+                                defaultChecked={pointer=='selector'}
+                                onChange={e=>e.currentTarget.checked ? setMetaData(e.currentTarget.name, e.currentTarget.value) : 0}/>
+                            Selector
+                        </label>
+                    </td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td colSpan={4}>
+                    <td colSpan={3}>
                         <small>The URL you'd like to start automated testing from. <i>Target URL must be under <b>{window.avt_object.home_url}</b></i></small>
                         {
                             !testing_entry_point ? null :
@@ -114,7 +127,6 @@ const BlueprintEditor=props=>
                             </p>
                         }
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
         </table>
@@ -122,11 +134,12 @@ const BlueprintEditor=props=>
         <table class="avt-event-list">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>Id</th>
                     <th>Action</th>
-                    <th>Xpath</th>
+                    <th>Xpath/Selector</th>
                     <th>Value</th>
                     <th>Comment</th>
+                    <th title="Skip if target element not found">Skippable</th>
                     <th></th>
                 </tr>
             </thead>
@@ -134,27 +147,11 @@ const BlueprintEditor=props=>
                 {
                     blueprint.map((event, index)=> {
                         
-                        let {key, action, xpath, value, comment} = event || {};
+                        let {key, action, xpath, value, comment, skippable} = event || {};
 
                         return (!action || !actions[action]) ? null : <tr key={key}>
                             <td>
-                                {
-                                    blueprint.length<=1 ? null :
-                                    <span 
-                                        class="dashicons dashicons-trash" 
-                                        title="Delete this action" 
-                                        onClick={()=>deleteAction(index)}></span>
-                                }
-
-                                <span 
-                                    class="dashicons dashicons-arrow-up-alt" 
-                                    title="Add action before" 
-                                    onClick={()=>addNewAction(index)}></span>
-
-                                <span 
-                                    class="dashicons dashicons-arrow-down-alt" 
-                                    title="Add action after" 
-                                    onClick={()=>addNewAction(index+1)}></span>
+                                {index+1}.
                             </td>
                             <td>
                                 <select 
@@ -203,7 +200,36 @@ const BlueprintEditor=props=>
                                     title={comment}
                                     onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}/>
                             </td>
-                            <td></td>
+                            <td>
+                                {
+                                    !actions[action].xpath ? null :
+                                    <input 
+                                        type="checkbox" 
+                                        title="Skip if target element not found" 
+                                        name="skippable"
+                                        defaultChecked={skippable}
+                                        onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.checked)}/>
+                                }
+                            </td>
+                            <td>
+                                {
+                                    blueprint.length<=1 ? null :
+                                    <span 
+                                        class="dashicons dashicons-trash" 
+                                        title="Delete this action" 
+                                        onClick={()=>deleteAction(index)}></span>
+                                }
+
+                                <span 
+                                    class="dashicons dashicons-arrow-up-alt" 
+                                    title="Add action before" 
+                                    onClick={()=>addNewAction(index)}></span>
+
+                                <span 
+                                    class="dashicons dashicons-arrow-down-alt" 
+                                    title="Add action after" 
+                                    onClick={()=>addNewAction(index+1)}></span>
+                            </td>
                         </tr>
                     })
                 }

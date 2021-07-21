@@ -361,6 +361,7 @@ class DashboardRoot extends Component {
                 <BlueprintEditor 
                     entry_point={tests[current_one].entry_point}
                     event_delay={tests[current_one].event_delay}
+                    pointer={tests[current_one].pointer || 'xpath'}
                     test_case={current_one}
                     blueprint={tests[current_one].blueprint} 
                     setMetaData={this.setMetaData}
