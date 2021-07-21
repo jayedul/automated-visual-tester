@@ -11,7 +11,7 @@ window.jQuery(window).load(function() {
     const Tester = function() {
 
         // This object must be same as the one in ~/react/dashboard/tests-page/blueprint-editor/index.jsx
-        const actions = {
+        this.actions = {
             click: {title: 'Click', xpath: true, value:false},
             dblclick: {title: 'Double Click', xpath: true, value:false},
             focus: {title: 'Focus', xpath: true, value: false},
@@ -80,8 +80,6 @@ window.jQuery(window).load(function() {
             this.setCookie(key, '', -2);
         } 
 
-        this.getRandomString = p=>'k'+Math.random().toString(16).substring(2, 5)+new Date().getTime();
-
         this.overlay_protection=(show, organic)=> {
 
             if(!show) {
@@ -119,10 +117,11 @@ window.jQuery(window).load(function() {
 
             var delay = def_delay;
             var event  = blueprints.shift();
+            var require_element = this.actions[event.action].xpath;
 
             // Prepare element
             var element = null;
-            if(event.xpath) {
+            if(require_element && event.xpath) {
                 if(pointer=='xpath') {
                     var DOM = document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     DOM ? element = $(DOM) : 0;
@@ -138,8 +137,8 @@ window.jQuery(window).load(function() {
             // Log progress
             console.log('AVT: ' + event.action + ' - ' + (event.comment || ''));
 
-            if(!element) {
-                if( this.actions[event.action].xpath ) {
+            if(!element || !element.length) {
+                if( require_element ) {
                     if(event.skippable) {
                         console.log('AVT Target not found: '+ event.xpath);
                         console.log('Skipping element as it is marked as skippable');
@@ -229,7 +228,21 @@ window.jQuery(window).load(function() {
                     break;
 
                 case 'redirect' :
-                    window.location.assign(event.value);
+                    var url = event.value;
+                    url = url.toLowerCase();
+                    if(!(url.indexOf('http://')===0 || url.indexOf('https://')===0)){
+                        if(url.indexOf('/')===0) {
+                            url = window.avt_object.home_url+url;
+                        } else {
+                            var path = window.location.pathname;
+                            path = path.split('/');
+                            path = path.slice(0, path.length-1).join('/');
+                            url = window.location.origin+path+'/'+url;
+                        }
+                    }
+                    
+                    console.log('AVT: Redirect to ' + url);
+                    window.location.assign(url);
                     this.setCookie(ck_leave, 1);
                     break;
 
@@ -238,7 +251,7 @@ window.jQuery(window).load(function() {
                     return;
             }
 
-            if(!has_next_page) {
+            if(!has_next_page || !blueprints.length) {
                 return;
             }
         
@@ -284,43 +297,35 @@ window.jQuery(window).load(function() {
             });
         }
 
-        this.expand_eusable_sequence = blueprints => {
+        this.expand_reusable_sequence = blueprints => {
 
-            var reusage = [];
-
-
-            console.log(blueprints);
-            
+            var expanded = [];
 
             // Loop through the array and collect reusable map
             for(var i=0; i<blueprints.length; i++) {
 
                 var blueprint = blueprints[i];
 
+                // Add normal events normally
                 if(blueprint.action!='reuse') {
+                    expanded.push(blueprint);
                     continue;
                 }
 
+                // Prepare reusable range and enter all
                 var range = blueprint.value.split('-');
                 var from = parseInt(range[0]) - 1;
                 var to = parseInt(range[1]) - 1;
 
-                var sliced_blueprint = blueprints.slice(from, to+1).map(b=>{ 
-                    b.key = this.getRandomString(); 
-                    return b;
-                });
-
-                reusage.push([i, sliced_blueprint]);
+                for(var n=from; n<=to; n++) {
+                    var blueprint2 = blueprints[n];
+                    if(blueprint2 && blueprint2.action!='reuse') {
+                        expanded.push(blueprint2);
+                    }
+                }
             }
 
-            console.log(blueprints);
-            
-            // Loop through the reusage map and expand the main blueprint array accordingly
-            for(var i=0; i<reusage.length; i++) {
-                // blueprints.splice(reusage[i][0], 1, ...reusage[i][1]);
-            }
-
-            console.log(blueprints);
+            return expanded;
         }
 
         this.init = () => {
@@ -350,21 +355,20 @@ window.jQuery(window).load(function() {
                 console.info('AVT Testing: ' + data.title);
                 start_at>0 ? console.info('AVT Resumed at index: '+start_at) : 0;
 
-                var expanded = this.expand_eusable_sequence(data.blueprint);
-                return;
+                var expanded = this.expand_reusable_sequence(data.blueprint);
                 var remaining_tests = expanded.slice(start_at);
                 var next_breakpoint;
 
                 for(var i=0; i<remaining_tests.length; i++) {
-                    var {action, key} = remaining_tests[i];
+                    var {action} = remaining_tests[i];
 
                     if(navigation_events.indexOf(action)) {
-                        next_breakpoint = key;
+                        next_breakpoint = i;
                         break;
                     }
                 }
 
-                var has_next_page = next_breakpoint && ((remaining_tests[remaining_tests.length-1] || {}).key!=next_breakpoint);
+                var has_next_page = next_breakpoint!=undefined && remaining_tests.length-1!=next_breakpoint;
                 
                 if(!remaining_tests || !remaining_tests.length) {
                     console.log('Empty Test Case. Testing Stopped.');
