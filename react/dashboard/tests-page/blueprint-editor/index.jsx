@@ -149,6 +149,7 @@ const BlueprintEditor=props=>
                         
                         let {key, action, xpath, value, comment, skippable, sequence_title} = event || {};
                         let id = index+1;
+                        let is_redirect = action=='redirect' || (action=='reuse' && (blueprint[(parseInt(value) || 0)-1] || {}).action=='redirect');
 
                         return (!action || !actions[action]) ? null : <> 
                         <tr class={sequence_title ? 'has_line' : ''}>
@@ -161,7 +162,7 @@ const BlueprintEditor=props=>
                         <tr key={key}>
                             <td>
                                 {
-                                    action!='redirect' ? id+'.' :
+                                    !is_redirect ? id+'.' :
                                     <a   
                                         href={testing_entry_point+'&avt_test_offset='+id} 
                                         onClick={e=>e.preventDefault()} title="Start testing from here. Make sure the session supports testing from here.">

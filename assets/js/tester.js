@@ -122,10 +122,16 @@ window.jQuery(window).load(function() {
                 return;
             }
 
+
             var delay = def_delay;
             var event  = blueprints.shift();
+
             var require_element = this.actions[event.action].xpath;
 
+            if(event.sequence_title) {
+                console.log('%c-----'+event.sequence_title+'-----', 'font-weight:bold');
+            }
+            
             // Prepare element
             var element = null;
             if(require_element && event.xpath) {
@@ -153,6 +159,8 @@ window.jQuery(window).load(function() {
                     } else {
                         console.log('Automated Testing Stopped');
                         this.overlay_protection(false, true);
+                        console.log('AVT: Target not found: '+ event.xpath);
+                        console.log(event);
                         alert('AVT Target not found: '+ event.xpath);
                     }
                     return;
@@ -169,7 +177,7 @@ window.jQuery(window).load(function() {
                 element.addClass('avt-tester-highlight');
             }
 
-            if(!blueprints.length || !has_next_page) {
+            if(!blueprints || !blueprints.length || !has_next_page) {
                 this.overlay_protection(false, true);
                 console.log('Testing Completed');
             } else {
@@ -235,6 +243,8 @@ window.jQuery(window).load(function() {
                     break;
 
                 case 'redirect' :
+                    this.setCookie(ck_leave, 1);
+                    
                     var url = event.value;
                     url = url.toLowerCase();
                     if(!(url.indexOf('http://')===0 || url.indexOf('https://')===0)){
@@ -250,8 +260,7 @@ window.jQuery(window).load(function() {
                     
                     console.log('AVT: Redirect to ' + url);
                     window.location.assign(url);
-                    this.setCookie(ck_leave, 1);
-                    break;
+                    return;
 
                 case 'page_leave' : 
                     this.setCookie(ck_leave, 1);
@@ -307,7 +316,7 @@ window.jQuery(window).load(function() {
                     callback(response.data.blueprint)
                 },
                 complete: data => {
-                    console.log('AVT: Request completed.');
+                    console.log('AVT: Ajax Request to get tests has been completed.');
                 },
                 error: error=> {
                     console.log('AVT test blueprint loading error.');
@@ -318,32 +327,34 @@ window.jQuery(window).load(function() {
         this.expand_reusable_sequence = blueprints => {
 
             var expanded = [];
+            var index_map = {};
+            var add_index = 0;
 
             // Loop through the array and collect reusable map
             for(var i=0; i<blueprints.length; i++) {
 
                 var blueprint = blueprints[i];
+                expanded.push(blueprint);
 
-                // Add normal events normally
-                if(blueprint.action!='reuse') {
-                    expanded.push(blueprint);
-                    continue;
-                }
+                // Expand if it reuses
+                if(blueprint.action=='reuse') {
+                    // Prepare reusable range and enter all
+                    var range = blueprint.value.split('-');
+                    var from = parseInt(range[0]) - 1;
+                    var to = parseInt(range[1]) - 1;
 
-                // Prepare reusable range and enter all
-                var range = blueprint.value.split('-');
-                var from = parseInt(range[0]) - 1;
-                var to = parseInt(range[1]) - 1;
-
-                for(var n=from; n<=to; n++) {
-                    var blueprint2 = blueprints[n];
-                    if(blueprint2 && blueprint2.action!='reuse') {
-                        expanded.push(blueprint2);
+                    for(var n=from; n<=to; n++) {
+                        var blueprint2 = blueprints[n];
+                        if(blueprint2 && blueprint2.action!='reuse') {
+                            expanded.push(blueprint2);
+                            add_index++;
+                        }
                     }
                 }
-            }
 
-            return expanded;
+                index_map[i]=i+add_index;
+            }
+            return [expanded, index_map];
         }
 
         this.init = () => {
@@ -376,16 +387,17 @@ window.jQuery(window).load(function() {
                     return;
                 }
 
-                console.log(start_at);
-
                 // Show the overlay now as testing getting started
                 this.overlay_protection(true);
 
                 console.info('AVT Testing: ' + data.title);
                 start_at>0 ? console.info('AVT Resumed at index: '+start_at) : 0;
 
-                var expanded = this.expand_reusable_sequence(data.blueprint);
-                var remaining_tests = expanded.slice(start_at);
+                var expand = this.expand_reusable_sequence(data.blueprint);
+                var expanded = expand[0];
+                var index_map = expand[1];
+                
+                var remaining_tests = expanded.slice(index_map[start_at]);
                 var next_breakpoint;
 
                 for(var i=0; i<remaining_tests.length; i++) {

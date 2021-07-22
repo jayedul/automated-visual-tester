@@ -7,6 +7,9 @@
             <?php _e( 'Please make sure the Xpath/Selector you input here always points to the correct element.', 'automated-visual-tester' ); ?>
         </li>
         <li>
+            <?php _e( 'Only Google Chrome browser is recommended to copy xpath or selector. Other browsers aren\'t efficient for this.', 'automated-visual-tester' ); ?>
+        </li>
+        <li>
             <?php _e( 'Reuse event id can not be in another reusable range.', 'automated-visual-tester' ); ?>
         </li>
         <li>
@@ -31,6 +34,9 @@
         <li>
             <?php _e( 'Please be careful about starting test from specific index.', 'automated-visual-tester' ); ?>
             <?php _e( 'For safety, here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL.', 'automated-visual-tester' ); ?>
+        </li>
+        <li>
+            <?php _e('Running tests in the private or incognito tab is prohibited since some features might not work there.', 'automated-visual-tester' ); ?>
         </li>
         <li>
             <?php _e( 'You can use some relative path for redirection', 'automated-visual-tester' ); ?>

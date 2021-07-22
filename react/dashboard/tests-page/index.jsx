@@ -209,11 +209,10 @@ class DashboardRoot extends Component {
         if(current_blueprints[index] && position=='before') {
             // Move the sequence title to the new one as it 
             blueprint.sequence_title = current_blueprints[index].sequence_title;
-            tests[current_one].blueprint[index] = '';
+            tests[current_one].blueprint[index].sequence_title = '';
         }
         
         tests[current_one].blueprint.splice(index, 0, blueprint);
-
         this.setState({tests});
     }
 
