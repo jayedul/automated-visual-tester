@@ -25,19 +25,19 @@ msgstr ""
 msgid "Invalid Blueprints Array"
 msgstr ""
 
-#: AV_Tester/tester.php:126
-msgid "Invalid blueprint structure in the test %s"
+#: AV_Tester/tester.php:121
+msgid "Invalid blueprint array in the test %s"
 msgstr ""
 
-#: AV_Tester/tester.php:132
+#: AV_Tester/tester.php:127
 msgid "Invalid entry point URL in the test %s"
 msgstr ""
 
-#: AV_Tester/tester.php:138
+#: AV_Tester/tester.php:133
 msgid "Invalid event delay in the test %s"
 msgstr ""
 
-#: AV_Tester/tester.php:145
+#: AV_Tester/tester.php:140
 msgid "Saved Successfully"
 msgstr ""
 
@@ -46,41 +46,53 @@ msgid "Instructions"
 msgstr ""
 
 #: templates/dashboard.php:6
-msgid "Please make sure the Xpath you input here always points to the correct element."
+msgid "Please make sure the Xpath/Selector you input here always points to the correct element."
 msgstr ""
 
 #: templates/dashboard.php:9
-msgid "The testing initiator URL you'd get is meant to be copied and accessed from certain browser/tab/user-state based on your test case."
+msgid "Reuse event id can not be in another reusable range."
 msgstr ""
 
 #: templates/dashboard.php:12
-msgid "Please don't access other URL in the same browser session during testing."
+msgid "To trigger events on multiple elements, please use css selector instead of xpath."
 msgstr ""
 
-#: templates/dashboard.php:13
+#: templates/dashboard.php:15
+msgid "The testing initiator URL you'd get is meant to be copied and accessed from a certain browser/tab/user-state based on your test case."
+msgstr ""
+
+#: templates/dashboard.php:18
+msgid "Please don't access other URLs in the same browser session during testing."
+msgstr ""
+
+#: templates/dashboard.php:19
 msgid "It is forbidden in favour of testing across navigated pages using browser session identifier cookie."
 msgstr ""
 
-#: templates/dashboard.php:16
-msgid "Don't forget to add the 'Page Leave' event after the one the page would reload or redirect to new page."
+#: templates/dashboard.php:22
+msgid "Don't forget to add the 'Page Leave' event after the one the page would reload or redirect to a new page."
 msgstr ""
 
-#: templates/dashboard.php:17
-msgid "So the tester can detect new page and run remaining test on that."
-msgstr ""
-
-#: templates/dashboard.php:20
-msgid "Redirect event is meant to be used only for the URLs under %s."
-msgstr ""
-
-#: templates/dashboard.php:21
-msgid "So the tester will be able to resume on the redirected page too."
+#: templates/dashboard.php:23
+msgid "So the tester can detect the new page and run the remaining test on that."
 msgstr ""
 
 #: templates/dashboard.php:24
-msgid "You can see the testing log in browser console panel. And it is recommended in fact."
+msgid "Not necessary after the redirect event. Only after uncontrolled redirection made by anything else like browser/user."
 msgstr ""
 
 #: templates/dashboard.php:27
+msgid "Redirect event is meant to be used only for the URLs under %s."
+msgstr ""
+
+#: templates/dashboard.php:28
+msgid "So the tester will be able to resume on the redirected page too."
+msgstr ""
+
+#: templates/dashboard.php:31
+msgid "You can see the testing log in the browser console panel. And it is recommended in fact."
+msgstr ""
+
+#: templates/dashboard.php:34
 msgid "Read developer documentation on GitHub."
 msgstr ""

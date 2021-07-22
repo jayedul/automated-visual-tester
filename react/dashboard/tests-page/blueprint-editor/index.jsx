@@ -150,6 +150,13 @@ const BlueprintEditor=props=>
                         let {key, action, xpath, value, comment, skippable, sequence_title} = event || {};
 
                         return (!action || !actions[action]) ? null : <> 
+                        <tr class={sequence_title ? 'has_line' : ''}>
+                            <td colSpan={7}>
+                                <div className="separator" onClick={e=>onChange(key, 'sequence_title', (window.prompt('Sequence Title', (sequence_title || '')) || '').trim())}>
+                                    {sequence_title || 'Add Sequence Title'}
+                                </div>
+                            </td>
+                        </tr>
                         <tr key={key}>
                             <td>
                                 {index+1}.
@@ -224,19 +231,12 @@ const BlueprintEditor=props=>
                                 <span 
                                     class="dashicons dashicons-arrow-up-alt" 
                                     title="Add action before" 
-                                    onClick={()=>addNewAction(index)}></span>
+                                    onClick={()=>addNewAction(index, 'before')}></span>
 
                                 <span 
                                     class="dashicons dashicons-arrow-down-alt" 
                                     title="Add action after" 
-                                    onClick={()=>addNewAction(index+1)}></span>
-                            </td>
-                        </tr>
-                        <tr class={sequence_title ? 'has_line' : ''}>
-                            <td colSpan={7}>
-                                <div className="separator" onClick={e=>onChange(key, 'sequence_title', (window.prompt('Sequence Title', (sequence_title || ''))) || '')}>
-                                    {sequence_title || 'Add Sequence Title'}
-                                </div>
+                                    onClick={()=>addNewAction(index+1, 'after')}></span>
                             </td>
                         </tr>
                         </>

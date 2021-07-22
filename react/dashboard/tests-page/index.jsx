@@ -194,7 +194,7 @@ class DashboardRoot extends Component {
      * 
      * @since v1.0.0
      */
-    addNewAction(index) {
+    addNewAction(index, position) {
 
         let {tests, current_one} = this.state;
 
@@ -205,6 +205,13 @@ class DashboardRoot extends Component {
             comment: ''
         }
 
+        let current_blueprints = tests[current_one].blueprint;
+        if(current_blueprints[index] && position=='before') {
+            // Move the sequence title to the new one as it 
+            blueprint.sequence_title = current_blueprints[index].sequence_title;
+            tests[current_one].blueprint[index] = '';
+        }
+        
         tests[current_one].blueprint.splice(index, 0, blueprint);
 
         this.setState({tests});
@@ -219,7 +226,16 @@ class DashboardRoot extends Component {
      */
     deleteAction(index) {
         let {tests, current_one} = this.state;
+
+        // Move sequence title to next
+        let blueprint = tests[current_one].blueprint[index];
+        let next_blueprint = tests[current_one].blueprint[index+1];
+        if(blueprint && blueprint.sequence_title && next_blueprint && !next_blueprint.sequence_title) {
+            tests[current_one].blueprint[index+1].sequence_title = blueprint.sequence_title;
+        }
+
         tests[current_one].blueprint.splice(index, 1);
+        
         this.setState({tests});
     }
 
