@@ -80,6 +80,12 @@ window.jQuery(window).load(function() {
             this.setCookie(key, '', -2);
         } 
 
+        this.getParameter = (key, url) => {
+            var url_string = url || window.location.href;
+            var url = new URL(url_string);
+            return url.searchParams.get(key);
+        }
+
         this.overlay_protection=(show, organic)=> {
 
             if(!show) {
@@ -248,6 +254,13 @@ window.jQuery(window).load(function() {
 
                 case 'page_leave' : 
                     this.setCookie(ck_leave, 1);
+                    if(blueprints[0] && blueprints[0].action=='redirect') {
+                        var wait_for = 5000;
+                        console.log('AVT: If page doesn\'t leave for any reason, the next redirect event will be fired after '+wait_for+ ' milliseconds.');
+                        window.setTimeout(()=> {
+                            this.event_looper(blueprints, def_delay, pointer, has_next_page);
+                        }, 5000);
+                    }
                     return;
             }
 
@@ -336,7 +349,12 @@ window.jQuery(window).load(function() {
 
             this.fetch_blueprint(data=> {
 
-                var start_at = this.getCookie(ck, 0);
+                var start_at =  this.getCookie(ck, 0);
+
+                if(this.getParameter('avt_test_case')) {
+                    start_at = 0;
+                    this.deleteCookie(ck);
+                }
 
                 // This block means there is incomplete test but page leave event was not fired
                 if(start_at>0 && !this.getCookie(ck_leave)) {

@@ -98,7 +98,7 @@ const BlueprintEditor=props=>
                                 type="radio" 
                                 name="pointer" 
                                 value="xpath" 
-                                defaultChecked={pointer=='xpath'}
+                                checked={pointer=='xpath'}
                                 onChange={e=>e.currentTarget.checked ? setMetaData(e.currentTarget.name, e.currentTarget.value) : 0}/>
                             Xpath
                         </label>
@@ -108,7 +108,7 @@ const BlueprintEditor=props=>
                                 type="radio" 
                                 name="pointer" 
                                 value="selector" 
-                                defaultChecked={pointer=='selector'}
+                                checked={pointer=='selector'}
                                 onChange={e=>e.currentTarget.checked ? setMetaData(e.currentTarget.name, e.currentTarget.value) : 0}/>
                             Selector
                         </label>
@@ -121,7 +121,7 @@ const BlueprintEditor=props=>
                             !testing_entry_point ? null :
                             <p>
                                 Save the changes and access testing URL from certain browser/tab according to your test case.<br/>
-                                <a href={testing_entry_point} target="blank">
+                                <a href={testing_entry_point} target="blank" onClick={e=>e.preventDefault()}>
                                     {testing_entry_point}
                                 </a>
                             </p>
@@ -147,9 +147,10 @@ const BlueprintEditor=props=>
                 {
                     blueprint.map((event, index)=> {
                         
-                        let {key, action, xpath, value, comment, skippable} = event || {};
+                        let {key, action, xpath, value, comment, skippable, sequence_title} = event || {};
 
-                        return (!action || !actions[action]) ? null : <tr key={key}>
+                        return (!action || !actions[action]) ? null : <> 
+                        <tr key={key}>
                             <td>
                                 {index+1}.
                             </td>
@@ -231,6 +232,14 @@ const BlueprintEditor=props=>
                                     onClick={()=>addNewAction(index+1)}></span>
                             </td>
                         </tr>
+                        <tr class={sequence_title ? 'has_line' : ''}>
+                            <td colSpan={7}>
+                                <div className="separator" onClick={e=>onChange(key, 'sequence_title', (window.prompt('Sequence Title', (sequence_title || ''))) || '')}>
+                                    {sequence_title || 'Add Sequence Title'}
+                                </div>
+                            </td>
+                        </tr>
+                        </>
                     })
                 }
             </tbody>

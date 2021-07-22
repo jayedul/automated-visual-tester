@@ -1,9 +1,45 @@
+@import "../../../lib/mixins.scss";
+
 table.avt-event-list {
 
     background: white;
     width: 100%;
     padding: 15px;
     
+    tr {
+        .separator {
+            @include valueWithPrefix(display, flex);
+            @include propertyWithPrefix(align-items, center);
+            text-align: center;
+            cursor: pointer;
+
+            &::before, &::after {
+                content: '';
+                flex: 1;
+                border-bottom: 1px dashed rgb(161, 161, 161);
+            }
+        }
+
+
+        &.has_line {
+            .separator {
+                margin-top: 10px;
+                font-weight: bold;
+                &::before, &::after {
+                    border-color: rgb(82, 82, 82);
+                }
+            }
+        }
+
+        &:not(.has_line) {
+            &:not(:hover) {
+                .separator {
+                    visibility: hidden;
+                }
+            }
+        }
+    }
+
     td{
         padding: 4px;
         
