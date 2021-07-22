@@ -1,7 +1,8 @@
+<?php $home_url = get_home_url(); ?>
 <div class="wrap" id="avt_dashboard_container"></div>
 <div class="wrap">
     <b><?php _e( 'Instructions', 'automated-visual-tester' ); ?>:</b>
-    <ul style="list-style-type: disc; list-style-position: outside; padding-left: 16px;">
+    <ul>
         <li>
             <?php _e( 'Please make sure the Xpath/Selector you input here always points to the correct element.', 'automated-visual-tester' ); ?>
         </li>
@@ -24,8 +25,26 @@
             <?php _e( 'Not necessary after the redirect event. Only after uncontrolled redirection made by anything else like browser/user.', 'automated-visual-tester'); ?>
         </li>
         <li>
-            <?php echo sprintf( __( 'Redirect event is meant to be used only for the URLs under %s.', 'automated-visual-tester' ), get_home_url() ); ?>
+            <?php echo sprintf( __( 'Redirect event is meant to be used only for the URLs under %s.', 'automated-visual-tester' ), '<a href="'.$home_url.'" target="_blank">'.$home_url.'</a>' ); ?>
             <?php _e( 'So the tester will be able to resume on the redirected page too.', 'automated-visual-tester' ); ?>
+        </li>
+        <li>
+            <?php _e( 'Please be careful about starting test from specific index.', 'automated-visual-tester' ); ?>
+            <?php _e( 'For safety, here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL.', 'automated-visual-tester' ); ?>
+        </li>
+        <li>
+            <?php _e( 'You can use some relative path for redirection', 'automated-visual-tester' ); ?>
+            <ul>
+                <li>
+                    <code>/path/</code> = <code><?php echo $home_url ?>/path</code>
+                </li>
+                <li>
+                    <code>path</code> = <code><?php echo $home_url ?>/current_path/path</code>
+                </li>
+                <li>
+                    <code>http(s)://absolute_url</code> = <code>http(s)://absolute_url</code>
+                </li>
+            </ul>
         </li>
         <li>
             <?php _e( 'You can see the testing log in the browser console panel. And it is recommended in fact.', 'automated-visual-tester' ); ?>

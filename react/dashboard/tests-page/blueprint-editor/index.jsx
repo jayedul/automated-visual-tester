@@ -148,6 +148,7 @@ const BlueprintEditor=props=>
                     blueprint.map((event, index)=> {
                         
                         let {key, action, xpath, value, comment, skippable, sequence_title} = event || {};
+                        let id = index+1;
 
                         return (!action || !actions[action]) ? null : <> 
                         <tr class={sequence_title ? 'has_line' : ''}>
@@ -159,7 +160,14 @@ const BlueprintEditor=props=>
                         </tr>
                         <tr key={key}>
                             <td>
-                                {index+1}.
+                                {
+                                    action!='redirect' ? id+'.' :
+                                    <a   
+                                        href={testing_entry_point+'&avt_test_offset='+id} 
+                                        onClick={e=>e.preventDefault()} title="Start testing from here. Make sure the session supports testing from here.">
+                                            <b>{id}.</b>
+                                    </a>
+                                }
                             </td>
                             <td>
                                 <select 
@@ -185,7 +193,7 @@ const BlueprintEditor=props=>
                                         name="xpath" 
                                         title={xpath}
                                         onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
-                                        placeholder="Xpath"/>
+                                        placeholder={pointer=='xpath' ? 'Xpath' : 'Selector'}/>
                                 }
                             </td>
                             <td>

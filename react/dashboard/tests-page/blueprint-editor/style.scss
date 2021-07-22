@@ -57,5 +57,18 @@ table.avt-event-list {
 
     &:not(.test-meta-data) td {
         text-align: center;
+        a {
+            text-decoration: none;
+        }
+    }
+}
+
+#avt_dashboard_container+div ul {
+    list-style-type: disc; 
+    list-style-position: outside; 
+    padding-left: 16px;
+
+    ul {
+        list-style-type: circle;
     }
 }

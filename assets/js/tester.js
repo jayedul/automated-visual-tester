@@ -80,10 +80,11 @@ window.jQuery(window).load(function() {
             this.setCookie(key, '', -2);
         } 
 
-        this.getParameter = (key, url) => {
+        this.getParameter = (key, def_val, url) => {
             var url_string = url || window.location.href;
             var url = new URL(url_string);
-            return url.searchParams.get(key);
+            var value = url.searchParams.get(key);
+            return  value ? value : def_val;
         }
 
         this.overlay_protection=(show, organic)=> {
@@ -302,7 +303,11 @@ window.jQuery(window).load(function() {
                         return;
                     }
 
+                    console.log('AVT: Dispatching blueprint');
                     callback(response.data.blueprint)
+                },
+                complete: data => {
+                    console.log('AVT: Request completed.');
                 },
                 error: error=> {
                     console.log('AVT test blueprint loading error.');
@@ -348,16 +353,20 @@ window.jQuery(window).load(function() {
             }
 
             this.fetch_blueprint(data=> {
+                if(this.getParameter('avt_test_case')) {
+                    var from_offset = this.getParameter('avt_test_offset', null);
+
+                    // Favour testing from specific index
+                    if(!(from_offset===null)) {
+                        this.setCookie(ck, from_offset-1);
+                        this.setCookie(ck_leave, 1);
+                    }
+                }
 
                 var start_at =  this.getCookie(ck, 0);
 
-                if(this.getParameter('avt_test_case')) {
-                    start_at = 0;
-                    this.deleteCookie(ck);
-                }
-
                 // This block means there is incomplete test but page leave event was not fired
-                if(start_at>0 && !this.getCookie(ck_leave)) {
+                if(start_at>0 && !this.getCookie(ck_leave) && from_offset===null) {
                     this.overlay_protection(false, true);
 
                     // Attempt start over if the URL is testing entrypoint
@@ -366,6 +375,8 @@ window.jQuery(window).load(function() {
                     }
                     return;
                 }
+
+                console.log(start_at);
 
                 // Show the overlay now as testing getting started
                 this.overlay_protection(true);
