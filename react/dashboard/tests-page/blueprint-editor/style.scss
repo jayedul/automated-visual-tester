@@ -72,3 +72,59 @@ table.avt-event-list {
         list-style-type: circle;
     }
 }
+
+.avt-toast-parent {
+    position: fixed;
+    right: 25px;
+    bottom: 50px;
+    right: 50px;
+    left: auto;
+    max-height: 400px;
+    width: 350px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: transparent;
+    z-index: 99999999;
+
+    &:empty {
+        display: none;
+    }
+
+    &>div {
+        background: white;
+        padding: 10px;
+        margin: 15px;
+        border-radius: 15px;
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.363);
+        border: 1px solid #E8E8E8;
+        background: white;
+        border: none;
+        
+        @include valueWithPrefix(display, flex);
+        @include propertyWithPrefix(align-content, center);
+        @include propertyWithPrefix(align-items, center);
+
+        &>div {
+            padding: 8px;
+        }
+
+        b{
+            font-weight: 600;
+            display: block;
+        }
+        
+        span{
+            color: rgb(51, 51, 51);
+        }
+
+        i {
+            cursor: pointer;
+            font-size: 14px;
+        }
+    }
+}
+
+body.rtl .avt-toast-parent {
+    right: auto;
+    left: 50px;
+}

@@ -29,6 +29,8 @@ class DashboardRoot extends Component {
         this.addNewAction = this.addNewAction.bind(this);
         this.modifyEvent = this.modifyEvent.bind(this);
         this.deleteAction = this.deleteAction.bind(this);
+        this.adjustReuseRange = this.adjustReuseRange.bind(this);
+        this.avtToast = this.avtToast.bind(this);
     }
 
     /**
@@ -187,6 +189,101 @@ class DashboardRoot extends Component {
         element.click();
     }
 
+
+    avtToast(title, description) {
+
+        if(!window.jQuery('.avt-toast-parent').length) {
+            window.jQuery('body').append('<div class="avt-toast-parent"></div>');
+        }
+        
+        let content = window.jQuery('\
+            <div>\
+                <div>\
+                    <div>\
+                        <b>'+title+'</b>\
+                        <span>'+description+'</span>\
+                    </div>\
+                </div>\
+            </div>');
+
+        let is_hovered = false;
+        content
+            .mouseover(function() {
+                is_hovered=true
+            }).mouseout(function() {
+                is_hovered=false
+            }).find('.avt-toast-close').click(function() {
+                content.remove();
+            });
+
+        window.jQuery('.avt-toast-parent').append(content);
+
+        let waiter = function() {
+            setTimeout(function() {
+                if(content) {
+                    if(is_hovered) {
+                        waiter();
+                        return;
+                    }
+
+                    content.fadeOut('fast', function() {
+                        window.jQuery(this).remove();
+                    });
+                }
+            }, 3000);
+        }
+        
+        waiter();
+    }
+
+    adjustReuseRange(blueprints, index, is_added) {
+
+        //Adjust reuse sequence range
+        for(let i=0; i<blueprints.length; i++) {
+            let bprint = blueprints[i];
+            if(bprint.action!='reuse') {
+                continue;
+            }
+
+            let range = bprint.value.split('-');
+            let from = (parseInt(range[0] || 0) || 0) - 1;
+            let to = (parseInt(range[1] || 0) || 0) - 1;
+            let is_del_clear = !is_added && (from==index || to==index);
+
+            if(from<0 || to<0 || is_del_clear) {
+                blueprints[i].value = '';
+                if(is_del_clear) {
+                    this.avtToast('Notice!', 'Action '+(i+1)+': Reuse range has been cleared since starting or ending action has been deleted.');
+                }
+                continue;
+            }
+
+            if(is_added) {
+                if(index<=from) {
+                    from = from+1;
+                    to = to+1;
+                } else if(index>from && index<=to) {
+                    to = to+1;
+                }
+            } else {
+                if(index<from) {
+                    from = from-1;
+                    to = to-1;
+                } else if(index>from && index<=to) {
+                    to = to-1;
+                }
+            }
+            
+            // Make normal human readable starting count from 1 instead of 0
+            from = from+1;
+            to = to+1;
+
+            blueprints[i].value = from+'-'+to;
+        }
+
+        return blueprints;
+    }
+
     /**
      * @return void
      * 
@@ -207,12 +304,15 @@ class DashboardRoot extends Component {
 
         let current_blueprints = tests[current_one].blueprint;
         if(current_blueprints[index] && position=='before') {
-            // Move the sequence title to the new one as it 
+            // Move the sequence title to the new one
             blueprint.sequence_title = current_blueprints[index].sequence_title;
             tests[current_one].blueprint[index].sequence_title = '';
         }
         
+        // Add the new blueprint to the array
         tests[current_one].blueprint.splice(index, 0, blueprint);
+        tests[current_one].blueprint = this.adjustReuseRange(tests[current_one].blueprint, index, true);
+
         this.setState({tests});
     }
 
@@ -234,7 +334,8 @@ class DashboardRoot extends Component {
         }
 
         tests[current_one].blueprint.splice(index, 1);
-        
+        tests[current_one].blueprint = this.adjustReuseRange(tests[current_one].blueprint, index, false);
+
         this.setState({tests});
     }
 
