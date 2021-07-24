@@ -158,103 +158,129 @@ const BlueprintEditor=props=>
                         let {tooltip=''} = actions[action];
                         let is_redirect = action=='redirect' || (action=='reuse' && (blueprint[parseInt(value) || -1] || {}).action=='redirect');
 
+                        let is_collapsed = false;
+                        let section_index = null;
+                        for(let i=index; i>=0; i--) {
+                            if(blueprint[i].sequence_title) {
+                                is_collapsed = blueprint[i].is_collapsed;
+                                section_index = i;
+                                break;
+                            }
+                        }
+
                         return (!action || !actions[action]) ? null : <> 
-                        <tr class={sequence_title ? 'has_line' : ''}>
-                            <td colSpan={7}>
-                                <div className="separator" onClick={e=>onChange(key, 'sequence_title', (window.prompt('Sequence Title', (sequence_title || '')) || '').trim())}>
-                                    {sequence_title || 'Add Sequence Title'}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr key={key}>
-                            <td>
-                                {
-                                    !is_redirect ? index+'.' :
-                                    <a   
-                                        href={testing_entry_point+'&avt_test_offset='+index} 
-                                        onClick={e=>e.preventDefault()} title="Start testing from here. Make sure the session supports testing from here.">
-                                            <b>{index}.</b>
-                                    </a>
-                                }
-                            </td>
-                            <td>
-                                <select 
-                                    name="action" 
-                                    title={action+(tooltip ? ': '+tooltip : '')} 
-                                    defaultValue={action} 
-                                    onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}>
-                                    {
-                                        Object.keys(actions).sort().map(action=>{
-                                            return <option value={action} key={action}>
-                                                {actions[action].title}
-                                            </option>
-                                        })
-                                    }
-                                </select>
-                            </td>
-                            <td>
-                                {
-                                    !actions[action].xpath ? null : 
-                                    <input 
-                                        type="text" 
-                                        value={xpath} 
-                                        name="xpath" 
-                                        title={xpath}
-                                        onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
-                                        placeholder={pointer=='xpath' ? 'Xpath' : 'Selector'}/>
-                                }
-                            </td>
-                            <td>
-                                {
-                                    !actions[action].value ? null :
-                                    <input 
-                                        type={actions[action].type || 'text'} 
-                                        value={value} 
-                                        name="value" 
-                                        title={value}
-                                        onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
-                                        placeholder={actions[action].placeholder}/>
-                                }
-                            </td>
-                            <td>
-                                <input 
-                                    type="text" 
-                                    value={comment} 
-                                    name="comment" 
-                                    title={comment}
-                                    onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}/>
-                            </td>
-                            <td>
-                                {
-                                    !actions[action].xpath ? null :
-                                    <input 
-                                        type="checkbox" 
-                                        title="Skip if target element not found" 
-                                        name="skippable"
-                                        defaultChecked={skippable}
-                                        onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.checked)}/>
-                                }
-                            </td>
-                            <td>
-                                {
-                                    blueprint.length<=1 ? null :
-                                    <span 
-                                        class="dashicons dashicons-trash" 
-                                        title="Delete this action" 
-                                        onClick={()=>deleteAction(index)}></span>
-                                }
+                            {
+                                (is_collapsed && index!==section_index) ? null :
+                                <tr key={'t_'+key} class={sequence_title ? 'has_line' : ''}>
+                                    <td colSpan={7}>
+                                        <div className="separator">
+                                            <span>
+                                                {
+                                                    !sequence_title ? null :
+                                                    <span className="collapsible-controller" onClick={e=>onChange(key, 'is_collapsed', !is_collapsed)}>
+                                                        {is_collapsed ? '+' : '-'}
+                                                    </span>
+                                                }
+                                                <span onClick={e=>onChange(key, 'sequence_title', (window.prompt('Sequence Title', (sequence_title || '')) || '').trim())}>
+                                                    {sequence_title || 'Add Sequence Title'}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            {
+                                is_collapsed ? null : 
+                                <tr key={key}>
+                                    <td>
+                                        {
+                                            !is_redirect ? index+'.' :
+                                            <a   
+                                                href={testing_entry_point+'&avt_test_offset='+index} 
+                                                onClick={e=>e.preventDefault()} title="Start testing from here. Make sure the session supports testing from here.">
+                                                    <b>{index}.</b>
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        <select 
+                                            name="action" 
+                                            title={action+(tooltip ? ': '+tooltip : '')} 
+                                            defaultValue={action} 
+                                            onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}>
+                                            {
+                                                Object.keys(actions).sort().map(action=>{
+                                                    return <option value={action} key={action}>
+                                                        {actions[action].title}
+                                                    </option>
+                                                })
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        {
+                                            !actions[action].xpath ? null : 
+                                            <input 
+                                                type="text" 
+                                                value={xpath} 
+                                                name="xpath" 
+                                                title={xpath}
+                                                onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
+                                                placeholder={pointer=='xpath' ? 'Xpath' : 'Selector'}/>
+                                        }
+                                    </td>
+                                    <td>
+                                        {
+                                            !actions[action].value ? null :
+                                            <input 
+                                                type={actions[action].type || 'text'} 
+                                                value={value} 
+                                                name="value" 
+                                                title={value}
+                                                onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
+                                                placeholder={actions[action].placeholder}/>
+                                        }
+                                    </td>
+                                    <td>
+                                        <input 
+                                            type="text" 
+                                            value={comment} 
+                                            name="comment" 
+                                            title={comment}
+                                            onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}/>
+                                    </td>
+                                    <td>
+                                        {
+                                            !actions[action].xpath ? null :
+                                            <input 
+                                                type="checkbox" 
+                                                title="Skip if target element not found" 
+                                                name="skippable"
+                                                defaultChecked={skippable}
+                                                onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.checked)}/>
+                                        }
+                                    </td>
+                                    <td>
+                                        {
+                                            blueprint.length<=1 ? null :
+                                            <span 
+                                                class="dashicons dashicons-trash" 
+                                                title="Delete this action" 
+                                                onClick={()=>deleteAction(index)}></span>
+                                        }
 
-                                <span 
-                                    class="dashicons dashicons-arrow-up-alt" 
-                                    title="Add action before" 
-                                    onClick={()=>addNewAction(index, 'before')}></span>
+                                        <span 
+                                            class="dashicons dashicons-arrow-up-alt" 
+                                            title="Add action before" 
+                                            onClick={()=>addNewAction(index, 'before')}></span>
 
-                                <span 
-                                    class="dashicons dashicons-arrow-down-alt" 
-                                    title="Add action after" 
-                                    onClick={()=>addNewAction(index+1, 'after')}></span>
-                            </td>
-                        </tr>
+                                        <span 
+                                            class="dashicons dashicons-arrow-down-alt" 
+                                            title="Add action after" 
+                                            onClick={()=>addNewAction(index+1, 'after')}></span>
+                                    </td>
+                                </tr>
+                            }
                         </>
                     })
                 }

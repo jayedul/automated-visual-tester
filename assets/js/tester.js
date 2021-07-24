@@ -189,6 +189,11 @@ window.jQuery(window).load(function() {
                 this.setCookie(ck, parseInt(this.getCookie(ck, 0))+1);
             }
 
+            if((blueprints[0] || blueprints[1] || {}).action=='page_leave') {
+                console.log('AVT: Page leave pending');
+                this.setCookie(ck_leave, 1);
+            }
+            
             switch(event.action) {
                 case 'focus' :
                 case 'blur' :
@@ -285,15 +290,10 @@ window.jQuery(window).load(function() {
                     window.location.assign(url);
                     return;
 
-                case 'page_leave' : 
-                    this.setCookie(ck_leave, 1);
-                    if(blueprints[0] && blueprints[0].action=='redirect') {
-                        var wait_for = 5000;
-                        console.log('AVT: If page doesn\'t leave for any reason, the next redirect event will be fired after '+wait_for+ ' milliseconds.');
-                        window.setTimeout(()=> {
-                            this.event_looper(blueprints, def_delay, pointer, has_next_page);
-                        }, 5000);
-                    }
+                case 'page_leave' :
+                    window.setTimeout(()=> {
+                        this.event_looper(blueprints, def_delay, pointer, has_next_page);
+                    }, 5000);
                     return;
 
                 case 'terminate' :
@@ -413,6 +413,8 @@ window.jQuery(window).load(function() {
                     }
                     return;
                 }
+
+                this.deleteCookie(ck_leave);
 
                 // Show the overlay now as testing getting started
                 this.overlay_protection(true);

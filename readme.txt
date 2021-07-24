@@ -19,3 +19,19 @@ To run test, all you have to do is define a series of user actions in dashboard 
 == Contribution ==
 Here is the public repository of this plugin on github if you are interested to contribute to...
 https://github.com/jayedul/automated-visual-tester 
+
+== Changelog ==
+
+= 1.0.1 - July 25, 2021 =
+
+New: Collapsible section
+New: Reuse sequence
+New: Initialize test from certain offset
+New: CSS selector with multiple target support
+New: Skip support for variable target element
+New: Gutenburg editor title and content input
+New: Relative path support for redirect action
+
+= 1.0.0 - July 01, 2021 =
+
+New: Initial Release

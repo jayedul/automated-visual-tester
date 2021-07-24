@@ -18,6 +18,26 @@ table.avt-event-list {
                 flex: 1;
                 border-bottom: 1px dashed rgb(161, 161, 161);
             }
+
+            &>span {
+                &>span {
+                    cursor: pointer;
+                    margin: 0 5px;
+
+                    &.collapsible-controller {
+                        margin-right: 0;
+                        display: inline-block;
+                        background: #3c434a;
+                        color: white;
+                        width: 16px;
+                        font-size: 17px;
+                        text-align: center;
+                        line-height: 15px;
+                        height: 16px;
+                        border-radius: 50%;
+                    }
+                }
+            }
         }
 
         &.has_line {
