@@ -2,7 +2,9 @@ import React from 'react';
 import './style.scss';
 
 /**
- * Define the supported event list as object
+ * Define the supported event list as object.
+ * If any version is released with wrong action key, then no need to fix as some user may have some test sequence with the key already. 
+ * However title can be changed.
  */
 const actions = {
     click: {title: 'Click', xpath: true, value:false},
@@ -20,11 +22,16 @@ const actions = {
     check: {title: 'Check', xpath: true, value: false},
     uncheck: {title: 'UnCheck', xpath: true, value: false},
     select: {title: 'Select Dropdown', xpath: true, value: true, placeholder:'Value to select'},
+
+    gutengurg_title: {title: 'Gutengurg Title', xpath: false, value:true, placeholder: 'Title for gutengurg editor'},
+    gutengurg_content: {title: 'Gutengurg Content', xpath: false, value:true, placeholder: 'Content for gutengurg editor'},
     
     delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
     page_leave: {title: 'Page Leave', xpath:false, value:false},
     redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
-    reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'}
+    reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'},
+
+    terminate: {title: 'Terminate Test', xpath: false, value: false, tooltip: 'Useful to make a stop inside a big sequence.'}
 }
 
 /**
@@ -148,8 +155,8 @@ const BlueprintEditor=props=>
                     blueprint.map((event, index)=> {
                         
                         let {key, action, xpath, value, comment, skippable, sequence_title} = event || {};
-                        let id = index+1;
-                        let is_redirect = action=='redirect' || (action=='reuse' && (blueprint[(parseInt(value) || 0)-1] || {}).action=='redirect');
+                        let {tooltip=''} = actions[action];
+                        let is_redirect = action=='redirect' || (action=='reuse' && (blueprint[parseInt(value) || -1] || {}).action=='redirect');
 
                         return (!action || !actions[action]) ? null : <> 
                         <tr class={sequence_title ? 'has_line' : ''}>
@@ -162,18 +169,18 @@ const BlueprintEditor=props=>
                         <tr key={key}>
                             <td>
                                 {
-                                    !is_redirect ? id+'.' :
+                                    !is_redirect ? index+'.' :
                                     <a   
-                                        href={testing_entry_point+'&avt_test_offset='+id} 
+                                        href={testing_entry_point+'&avt_test_offset='+index} 
                                         onClick={e=>e.preventDefault()} title="Start testing from here. Make sure the session supports testing from here.">
-                                            <b>{id}.</b>
+                                            <b>{index}.</b>
                                     </a>
                                 }
                             </td>
                             <td>
                                 <select 
                                     name="action" 
-                                    title={action} 
+                                    title={action+(tooltip ? ': '+tooltip : '')} 
                                     defaultValue={action} 
                                     onChange={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)}>
                                     {

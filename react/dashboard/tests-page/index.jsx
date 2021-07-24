@@ -246,14 +246,14 @@ class DashboardRoot extends Component {
             }
 
             let range = bprint.value.split('-');
-            let from = (parseInt(range[0] || 0) || 0) - 1;
-            let to = (parseInt(range[1] || 0) || 0) - 1;
+            let from = parseInt(range[0] || 0) || 0;
+            let to = parseInt(range[1] || 0) || 0;
             let is_del_clear = !is_added && (from==index || to==index);
 
             if(from<0 || to<0 || is_del_clear) {
                 blueprints[i].value = '';
                 if(is_del_clear) {
-                    this.avtToast('Notice!', 'Action '+(i+1)+': Reuse range has been cleared since starting or ending action has been deleted.');
+                    this.avtToast('Notice!', 'Action '+i+': Reuse range has been cleared since starting or ending action has been deleted.');
                 }
                 continue;
             }
@@ -274,10 +274,6 @@ class DashboardRoot extends Component {
                 }
             }
             
-            // Make normal human readable starting count from 1 instead of 0
-            from = from+1;
-            to = to+1;
-
             blueprints[i].value = from+'-'+to;
         }
 
@@ -442,7 +438,7 @@ class DashboardRoot extends Component {
                     AVT Tests &nbsp;
                     {
                         fetching ? null :
-                        <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={(e, d)=>(console.log(e, d),this.createNewTest())}>
+                        <button style={{verticalAlign: 'middle'}} className="button button-primary button-small" onClick={()=>this.createNewTest()}>
                             Create New
                         </button>
                     }

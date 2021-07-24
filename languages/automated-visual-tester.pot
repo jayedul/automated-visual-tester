@@ -54,7 +54,7 @@ msgid "Only Google Chrome browser is recommended to copy xpath or selector. Othe
 msgstr ""
 
 #: templates/dashboard.php:13
-msgid "Reuse event id can not be in another reusable range."
+msgid "Nested reusable sequence is not supported currently."
 msgstr ""
 
 #: templates/dashboard.php:16
@@ -94,11 +94,11 @@ msgid "So the tester will be able to resume on the redirected page too."
 msgstr ""
 
 #: templates/dashboard.php:35
-msgid "Please be careful about starting test from specific index."
+msgid "Here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL."
 msgstr ""
 
 #: templates/dashboard.php:36
-msgid "For safety, here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL."
+msgid "Make sure testing from specific offset will have appropriate environment, for example logged in user or other factors."
 msgstr ""
 
 #: templates/dashboard.php:39

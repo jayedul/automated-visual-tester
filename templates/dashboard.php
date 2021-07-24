@@ -10,7 +10,7 @@
             <?php _e( 'Only Google Chrome browser is recommended to copy xpath or selector. Other browsers aren\'t efficient for this.', 'automated-visual-tester' ); ?>
         </li>
         <li>
-            <?php _e( 'Reuse event id can not be in another reusable range.', 'automated-visual-tester' ); ?>
+            <?php _e( 'Nested reusable sequence is not supported currently.', 'automated-visual-tester' ); ?>
         </li>
         <li>
             <?php _e( 'To trigger events on multiple elements, please use css selector instead of xpath.', 'automated-visual-tester' ); ?>
@@ -32,8 +32,8 @@
             <?php _e( 'So the tester will be able to resume on the redirected page too.', 'automated-visual-tester' ); ?>
         </li>
         <li>
-            <?php _e( 'Please be careful about starting test from specific index.', 'automated-visual-tester' ); ?>
-            <?php _e( 'For safety, here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL.', 'automated-visual-tester' ); ?>
+            <?php _e( 'Here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL.', 'automated-visual-tester' ); ?>
+            <?php _e( 'Make sure testing from specific offset will have appropriate environment, for example logged in user or other factors.', 'automated-visual-tester' ); ?>
         </li>
         <li>
             <?php _e('Running tests in the private or incognito tab is prohibited since some features might not work there.', 'automated-visual-tester' ); ?>
@@ -42,10 +42,10 @@
             <?php _e( 'You can use some relative path for redirection', 'automated-visual-tester' ); ?>
             <ul>
                 <li>
-                    <code>/path/</code> = <code><?php echo $home_url ?>/path</code>
+                    <code>/path/</code> = <code><?php echo $home_url ?>/path/</code>
                 </li>
                 <li>
-                    <code>path</code> = <code><?php echo $home_url ?>/current_path/path</code>
+                    <code>path/</code> = <code><?php echo $home_url ?>/current_path/path/</code>
                 </li>
                 <li>
                     <code>http(s)://absolute_url</code> = <code>http(s)://absolute_url</code>

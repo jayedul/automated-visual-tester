@@ -27,11 +27,16 @@ window.jQuery(window).load(function() {
             check: {title: 'Check', xpath: true, value: false},
             uncheck: {title: 'UnCheck', xpath: true, value: false},
             select: {title: 'Select Dropdown', xpath: true, value: true, placeholder:'Value to select'},
+        
+            gutengurg_title: {title: 'Gutengurg Title', xpath: false, value:true, placeholder: 'Title for gutengurg editor'},
+            gutengurg_content: {title: 'Gutengurg Content', xpath: false, value:true, placeholder: 'Content for gutengurg editor'},
             
             delay: {title: 'Delay', xpath:false, value:true, type: 'number', placeholder:'Millisecond'},
             page_leave: {title: 'Page Leave', xpath:false, value:false},
             redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
-            reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'}
+            reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'},
+        
+            terminate: {title: 'Stop Test', xpath: false, value: false, tooltip: 'Useful to make a stop inside a big sequence.'}
         }
 
         var looper_terminated = false;
@@ -94,7 +99,7 @@ window.jQuery(window).load(function() {
                 // Show message if terminated manually
                 if(!organic) {
                     looper_terminated = true;
-                    console.info('AVT: Terminated by user');
+                    console.log('AVT: Terminated by user');
                 }
 
                 // Delete identifier cookies
@@ -131,7 +136,7 @@ window.jQuery(window).load(function() {
             if(event.sequence_title) {
                 console.log('%c-----'+event.sequence_title+'-----', 'font-weight:bold');
             }
-            
+
             // Prepare element
             var element = null;
             if(require_element && event.xpath) {
@@ -159,8 +164,7 @@ window.jQuery(window).load(function() {
                     } else {
                         console.log('Automated Testing Stopped');
                         this.overlay_protection(false, true);
-                        console.log('AVT: Target not found: '+ event.xpath);
-                        console.log(event);
+                        console.log('AVT: Target not found: '+ event.xpath, event);
                         alert('AVT Target not found: '+ event.xpath);
                     }
                     return;
@@ -182,7 +186,7 @@ window.jQuery(window).load(function() {
                 console.log('Testing Completed');
             } else {
                 // Store index for testing across navigated pages
-                this.setCookie(ck, parseInt( this.getCookie(ck, '0') )+1);
+                this.setCookie(ck, parseInt(this.getCookie(ck, 0))+1);
             }
 
             switch(event.action) {
@@ -239,6 +243,25 @@ window.jQuery(window).load(function() {
                     });
                     break;
 
+                case 'gutengurg_title' :
+                case 'gutengurg_content' :
+                    if(window._wpLoadBlockEditor || window._wpLoadGutenbergEditor) {
+                        if(event.action=='gutengurg_title') {
+                            window.wp.data.dispatch('core/editor').editPost({title: event.value});
+                        } else {
+                            window.wp.data.dispatch('core/block-editor').resetBlocks(window.wp.blocks.parse(event.value));
+                        }
+                    } else if(event.skippable) {
+                        console.log('AVT: Gutengurg editor not found. However skipping as it is marked as skippable.');
+                    } else {
+                        console.log('Automated Testing Stopped');
+                        this.overlay_protection(false, true);
+                        console.log('AVT: Gutengurg editor not found');
+                        alert('Gutengurg editor not found');
+                        return;
+                    }
+                    break;
+
                 case 'delay' : delay = parseInt( event.value );
                     break;
 
@@ -271,6 +294,11 @@ window.jQuery(window).load(function() {
                             this.event_looper(blueprints, def_delay, pointer, has_next_page);
                         }, 5000);
                     }
+                    return;
+
+                case 'terminate' :
+                    console.log('Automated Testing Terminated');
+                    this.overlay_protection(false, true);
                     return;
             }
 
@@ -312,11 +340,7 @@ window.jQuery(window).load(function() {
                         return;
                     }
 
-                    console.log('AVT: Dispatching blueprint');
                     callback(response.data.blueprint)
-                },
-                complete: data => {
-                    console.log('AVT: Ajax Request to get tests has been completed.');
                 },
                 error: error=> {
                     console.log('AVT test blueprint loading error.');
@@ -336,12 +360,14 @@ window.jQuery(window).load(function() {
                 var blueprint = blueprints[i];
                 expanded.push(blueprint);
 
+                index_map[i]=i+add_index;
+                
                 // Expand if it reuses
                 if(blueprint.action=='reuse') {
                     // Prepare reusable range and enter all
                     var range = blueprint.value.split('-');
-                    var from = parseInt(range[0]) - 1;
-                    var to = parseInt(range[1]) - 1;
+                    var from = parseInt(range[0]);
+                    var to = parseInt(range[1]);
 
                     for(var n=from; n<=to; n++) {
                         var blueprint2 = blueprints[n];
@@ -352,7 +378,6 @@ window.jQuery(window).load(function() {
                     }
                 }
 
-                index_map[i]=i+add_index;
             }
             return [expanded, index_map];
         }
@@ -364,17 +389,19 @@ window.jQuery(window).load(function() {
             }
 
             this.fetch_blueprint(data=> {
+                var use_map = false;
                 if(this.getParameter('avt_test_case')) {
                     var from_offset = this.getParameter('avt_test_offset', null);
 
                     // Favour testing from specific index
                     if(!(from_offset===null)) {
-                        this.setCookie(ck, from_offset-1);
+                        use_map = true;
+                        this.setCookie(ck, from_offset);
                         this.setCookie(ck_leave, 1);
                     }
                 }
 
-                var start_at =  this.getCookie(ck, 0);
+                var start_at = parseInt(this.getCookie(ck, 0)) || 0;
 
                 // This block means there is incomplete test but page leave event was not fired
                 if(start_at>0 && !this.getCookie(ck_leave) && from_offset===null) {
@@ -390,14 +417,15 @@ window.jQuery(window).load(function() {
                 // Show the overlay now as testing getting started
                 this.overlay_protection(true);
 
-                console.info('AVT Testing: ' + data.title);
-                start_at>0 ? console.info('AVT Resumed at index: '+start_at) : 0;
+                console.log('AVT Testing: ' + data.title);
+                start_at>0 ? console.log('AVT Resumed at '+start_at) : 0;
 
                 var expand = this.expand_reusable_sequence(data.blueprint);
                 var expanded = expand[0];
                 var index_map = expand[1];
                 
-                var remaining_tests = expanded.slice(index_map[start_at]);
+                var start_index = use_map ? index_map[start_at] : start_at;
+                var remaining_tests = expanded.slice(start_index);
                 var next_breakpoint;
 
                 for(var i=0; i<remaining_tests.length; i++) {
@@ -409,7 +437,7 @@ window.jQuery(window).load(function() {
                     }
                 }
 
-                var has_next_page = next_breakpoint!=undefined && remaining_tests.length-1!=next_breakpoint;
+                var has_next_page = next_breakpoint!=undefined && (remaining_tests.length-1)!=next_breakpoint;
                 
                 if(!remaining_tests || !remaining_tests.length) {
                     console.log('Empty Test Case. Testing Stopped.');
@@ -417,6 +445,9 @@ window.jQuery(window).load(function() {
                     return;
                 }
 
+                console.log(start_index);
+
+                this.setCookie(ck, start_index);
                 this.event_looper(remaining_tests, (data.event_delay || 0), (data.pointer || 'xpath'), has_next_page);
             });
         }
