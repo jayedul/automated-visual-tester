@@ -299,6 +299,11 @@ class DashboardRoot extends Component {
         let {tests, current_one} = this.state;
 
         for(let i=0; i<tests[current_one].blueprint.length; i++) {
+
+            if(key===null) {
+                tests[current_one].blueprint[i][name] = value;
+            }
+
             if(tests[current_one].blueprint[i].key==key) {
                 tests[current_one].blueprint[i][name] = value;
                 break;

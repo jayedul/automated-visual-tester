@@ -145,6 +145,12 @@ const BlueprintEditor=props=>
             </tbody>
         </table>
         <br/>
+        <div>
+            <a href="javascript:;" onClick={e=>onChange(null, 'is_collapsed', true)}>Collapse</a>
+            /
+            <a href="javascript:;" onClick={e=>onChange(null, 'is_collapsed', false)}>Expand</a> All
+        </div>
+        <br/>
         <table class="avt-event-list">
             <thead>
                 <tr>
@@ -168,11 +174,24 @@ const BlueprintEditor=props=>
 
                         let is_collapsed = false;
                         let section_index = null;
+                        let section_index_last = null;
+
                         for(let i=index; i>=0; i--) {
                             if(blueprint[i].sequence_title) {
                                 is_collapsed = blueprint[i].is_collapsed;
                                 section_index = i;
+                                section_index_last = i;
                                 break;
+                            }
+                        }
+
+                        // Get the section index
+                        if(index==section_index) {
+                            for(let i=index+1; true; i++) {
+                                if(!blueprint[i] || blueprint[i].sequence_title) {
+                                    break;
+                                }
+                                section_index_last=i;
                             }
                         }
 
@@ -190,7 +209,7 @@ const BlueprintEditor=props=>
                                                     </span>
                                                 }
                                                 <span onClick={e=>onChange(key, 'sequence_title', getSectionTitle(sequence_title))}>
-                                                    {sequence_title || 'Add Sequence Title'}
+                                                    {sequence_title || 'Add Sequence Title'}  ({section_index+'-'+section_index_last})
                                                 </span>
                                             </span>
                                         </div>

@@ -41,7 +41,7 @@ window.jQuery(window).load(function() {
 
         var looper_terminated = false;
         var overlay = $('body')
-                        .append('<style>.avt-tester-highlight{outline:1px dotted red !important;}</style>')
+                        .append('<style>.avt-tester-highlight{outline:1.4px dashed red !important;}</style>')
                         .append('<div \
                                     id="avt_overlay_protection" \
                                     style=" display:none; \
