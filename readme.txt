@@ -26,7 +26,6 @@ https://github.com/jayedul/automated-visual-tester
 
 New: Show collapsed sequence range in section title
 New: Toggle collapse all sequence
-Fix: Delay event optimization
 
 = 1.0.2 - July 25, 2021 =
 
