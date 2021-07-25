@@ -39,6 +39,9 @@
             <?php _e('Running tests in the private or incognito tab is prohibited since some features might not work there.', 'automated-visual-tester' ); ?>
         </li>
         <li>
+            <?php _e('Minimum delay 500 millisecond recommended.', 'automated-visual-tester' ); ?>
+        </li>
+        <li>
             <?php _e( 'You can use some relative path for redirection', 'automated-visual-tester' ); ?>
             <ul>
                 <li>

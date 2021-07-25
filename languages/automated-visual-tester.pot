@@ -106,13 +106,17 @@ msgid "Running tests in the private or incognito tab is prohibited since some fe
 msgstr ""
 
 #: templates/dashboard.php:42
+msgid "Minimum delay 500 millisecond recommended."
+msgstr ""
+
+#: templates/dashboard.php:45
 msgid "You can use some relative path for redirection"
 msgstr ""
 
-#: templates/dashboard.php:56
+#: templates/dashboard.php:59
 msgid "You can see the testing log in the browser console panel. And it is recommended in fact."
 msgstr ""
 
-#: templates/dashboard.php:59
+#: templates/dashboard.php:62
 msgid "Read developer documentation on GitHub."
 msgstr ""

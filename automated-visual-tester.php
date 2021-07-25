@@ -5,7 +5,7 @@
     Description: An automated testing plugin that simulates basic user interactions on browser without any crazy setup.
     Author: JK
     Author URI: https://profiles.wordpress.org/jayedul/
-    Version: 1.0.1
+    Version: 1.0.2
     License: GPLv2 or later
     Text Domain: automated-visual-tester
 */
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) )
 exit;
 
 // Define Runtime Information for this plugin 
-define( 'AVT_VERSION', '1.0.1' );
+define( 'AVT_VERSION', '1.0.2' );
 define( 'AVT_FILE', __FILE__ );
 define( 'AVT_DIR', __DIR__ );
 define( 'AVT_PATH_BASE', plugin_dir_path( __DIR__ ) );

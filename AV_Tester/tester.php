@@ -200,7 +200,7 @@ class Tester extends Init{
             return;
         }
 
-        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/js/tester.js', array( 'jquery' ), null, true );
+        wp_enqueue_script( 'avt-tester-js', AVT_URL_BASE . 'assets/js/tester.js', array( 'jquery' ), AVT_VERSION, true );
 	}
 
     /**

@@ -1,6 +1,8 @@
 import React from 'react';
 import './style.scss';
 
+import {copyText} from '../../../lib/utility';
+
 /**
  * Define the supported event list as object.
  * If any version is released with wrong action key, then no need to fix as some user may have some test sequence with the key already. 
@@ -32,6 +34,11 @@ const actions = {
     reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'},
 
     terminate: {title: 'Terminate Test', xpath: false, value: false, tooltip: 'Useful to make a stop inside a big sequence.'}
+}
+
+const getSectionTitle = sequence_title => {
+    let title = window.prompt('Sequence Title', (sequence_title || ''));
+    return title===null ? sequence_title : (title || '').trim();
 }
 
 /**
@@ -128,7 +135,7 @@ const BlueprintEditor=props=>
                             !testing_entry_point ? null :
                             <p>
                                 Save the changes and access testing URL from certain browser/tab according to your test case.<br/>
-                                <a href={testing_entry_point} target="blank" onClick={e=>e.preventDefault()}>
+                                <a href={testing_entry_point} target="blank" onClick={e=>(e.preventDefault(), copyText(testing_entry_point))}>
                                     {testing_entry_point}
                                 </a>
                             </p>
@@ -157,6 +164,7 @@ const BlueprintEditor=props=>
                         let {key, action, xpath, value, comment, skippable, sequence_title} = event || {};
                         let {tooltip=''} = actions[action];
                         let is_redirect = action=='redirect' || (action=='reuse' && (blueprint[parseInt(value) || -1] || {}).action=='redirect');
+                        let testing_offset = testing_entry_point+'&avt_test_offset='+index;
 
                         let is_collapsed = false;
                         let section_index = null;
@@ -181,7 +189,7 @@ const BlueprintEditor=props=>
                                                         {is_collapsed ? '+' : '-'}
                                                     </span>
                                                 }
-                                                <span onClick={e=>onChange(key, 'sequence_title', (window.prompt('Sequence Title', (sequence_title || '')) || '').trim())}>
+                                                <span onClick={e=>onChange(key, 'sequence_title', getSectionTitle(sequence_title))}>
                                                     {sequence_title || 'Add Sequence Title'}
                                                 </span>
                                             </span>
@@ -196,8 +204,9 @@ const BlueprintEditor=props=>
                                         {
                                             !is_redirect ? index+'.' :
                                             <a   
-                                                href={testing_entry_point+'&avt_test_offset='+index} 
-                                                onClick={e=>e.preventDefault()} title="Start testing from here. Make sure the session supports testing from here.">
+                                                href={testing_offset} 
+                                                onClick={e=>(e.preventDefault(), copyText(testing_offset))} 
+                                                title="Start testing from here. Make sure the session supports testing from here.">
                                                     <b>{index}.</b>
                                             </a>
                                         }

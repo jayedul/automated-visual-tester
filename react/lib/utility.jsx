@@ -23,4 +23,62 @@ const Spinner=props=>
     return loading ?  s : (allocate_space ? s : null);
 }
 
-export {Spinner, getRandomString}
+
+const avtToast = (title, description) => {
+
+    if(!window.jQuery('.avt-toast-parent').length) {
+        window.jQuery('body').append('<div class="avt-toast-parent"></div>');
+    }
+    
+    let content = window.jQuery('\
+        <div>\
+            <div>\
+                <div>\
+                    <b>'+title+'</b>\
+                    <span>'+description+'</span>\
+                </div>\
+            </div>\
+        </div>');
+
+    let is_hovered = false;
+    content
+        .mouseover(function() {
+            is_hovered=true
+        }).mouseout(function() {
+            is_hovered=false
+        }).find('.avt-toast-close').click(function() {
+            content.remove();
+        });
+
+    window.jQuery('.avt-toast-parent').append(content);
+
+    let waiter = function() {
+        setTimeout(function() {
+            if(content) {
+                if(is_hovered) {
+                    waiter();
+                    return;
+                }
+
+                content.fadeOut('fast', function() {
+                    window.jQuery(this).remove();
+                });
+            }
+        }, 3000);
+    }
+    
+    waiter();
+}
+
+const copyText=text=> {
+    let $ = window.jQuery;
+    let $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(text).select();
+    document.execCommand("copy");
+    $temp.remove();
+
+    avtToast('Copied!', text);
+}
+
+export {Spinner, getRandomString, avtToast, copyText}

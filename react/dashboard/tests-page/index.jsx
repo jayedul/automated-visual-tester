@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Spinner, getRandomString } from '../../lib/utility';
+import { Spinner, getRandomString, avtToast } from '../../lib/utility';
 import { BlueprintEditor } from './blueprint-editor';
 import { TestSelection } from './selection';
 
@@ -30,7 +30,6 @@ class DashboardRoot extends Component {
         this.modifyEvent = this.modifyEvent.bind(this);
         this.deleteAction = this.deleteAction.bind(this);
         this.adjustReuseRange = this.adjustReuseRange.bind(this);
-        this.avtToast = this.avtToast.bind(this);
     }
 
     /**
@@ -189,53 +188,6 @@ class DashboardRoot extends Component {
         element.click();
     }
 
-
-    avtToast(title, description) {
-
-        if(!window.jQuery('.avt-toast-parent').length) {
-            window.jQuery('body').append('<div class="avt-toast-parent"></div>');
-        }
-        
-        let content = window.jQuery('\
-            <div>\
-                <div>\
-                    <div>\
-                        <b>'+title+'</b>\
-                        <span>'+description+'</span>\
-                    </div>\
-                </div>\
-            </div>');
-
-        let is_hovered = false;
-        content
-            .mouseover(function() {
-                is_hovered=true
-            }).mouseout(function() {
-                is_hovered=false
-            }).find('.avt-toast-close').click(function() {
-                content.remove();
-            });
-
-        window.jQuery('.avt-toast-parent').append(content);
-
-        let waiter = function() {
-            setTimeout(function() {
-                if(content) {
-                    if(is_hovered) {
-                        waiter();
-                        return;
-                    }
-
-                    content.fadeOut('fast', function() {
-                        window.jQuery(this).remove();
-                    });
-                }
-            }, 3000);
-        }
-        
-        waiter();
-    }
-
     adjustReuseRange(blueprints, index, is_added) {
 
         //Adjust reuse sequence range
@@ -253,7 +205,7 @@ class DashboardRoot extends Component {
             if(from<0 || to<0 || is_del_clear) {
                 blueprints[i].value = '';
                 if(is_del_clear) {
-                    this.avtToast('Notice!', 'Action '+i+': Reuse range has been cleared since starting or ending action has been deleted.');
+                    avtToast('Notice!', 'Action '+i+': Reuse range has been cleared since starting or ending action has been deleted.');
                 }
                 continue;
             }
