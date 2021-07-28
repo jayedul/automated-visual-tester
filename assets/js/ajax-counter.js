@@ -1,9 +1,9 @@
 window.avt_ajax_counter = 0;
 
-window.jQuery(document).ajaxStart(function() {
+window.jQuery(document).ajaxSend(function() {
     window.avt_ajax_counter++;
 });
 
-window.jQuery(document).ajaxStop(function() {
+window.jQuery(document).ajaxComplete(function() {
     window.avt_ajax_counter--;
 });

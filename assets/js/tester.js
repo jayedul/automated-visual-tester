@@ -171,17 +171,19 @@ window.jQuery(window).load(function() {
                 }
             } else {
                 
+                // Scroll the element into view area
                 element.get(0).scrollIntoView({
                     behavior: 'smooth', 
                     block: 'center',
                     inline: 'center'
                 });
                 
-                // Replace the JS DOM with jquery DOM
+                // Add highlight class to the element
                 element.addClass('avt-tester-highlight');
             }
 
             if(!blueprints || !blueprints.length || !has_next_page) {
+                // Complete the test if no more test
                 this.overlay_protection(false, true);
                 console.log('Testing Completed');
             } else {
@@ -189,8 +191,12 @@ window.jQuery(window).load(function() {
                 this.setCookie(ck, parseInt(this.getCookie(ck, 0))+1);
             }
 
-            if((blueprints[0] || blueprints[1] || {}).action=='page_leave') {
+            // Set the leave key before the event, because in some cases leave occurs before next action execution
+            var pause_test = false;
+            if((blueprints[0] || {}).action=='page_leave') {
                 console.log('AVT: Page leave pending');
+                pause_test = true;
+                blueprints.splice(0, 1);
                 this.setCookie(ck_leave, 1);
             }
             
@@ -290,19 +296,13 @@ window.jQuery(window).load(function() {
                     window.location.assign(url);
                     return;
 
-                case 'page_leave' :
-                    window.setTimeout(()=> {
-                        this.event_looper(blueprints, def_delay, pointer, has_next_page);
-                    }, 5000);
-                    return;
-
                 case 'terminate' :
                     console.log('Automated Testing Terminated');
                     this.overlay_protection(false, true);
                     return;
             }
 
-            if(!has_next_page || !blueprints.length) {
+            if(!has_next_page || !blueprints.length || pause_test) {
                 return;
             }
         
@@ -420,7 +420,6 @@ window.jQuery(window).load(function() {
                 this.overlay_protection(true);
 
                 console.log('AVT Testing: ' + data.title);
-                start_at>0 ? console.log('AVT Resumed at '+start_at) : 0;
 
                 var expand = this.expand_reusable_sequence(data.blueprint);
                 var expanded = expand[0];
@@ -446,8 +445,6 @@ window.jQuery(window).load(function() {
                     this.overlay_protection(false, true);
                     return;
                 }
-
-                console.log(start_index);
 
                 this.setCookie(ck, start_index);
                 this.event_looper(remaining_tests, (data.event_delay || 0), (data.pointer || 'xpath'), has_next_page);

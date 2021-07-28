@@ -22,10 +22,12 @@ https://github.com/jayedul/automated-visual-tester
 
 == Changelog ==
 
-= 1.0.3 - July 26, 2021 =
+= 1.0.3 - July 28, 2021 =
 
 New: Show collapsed sequence range in section title
 New: Toggle collapse all sequence
+Fix: Page leave delay
+Fix: Target not found sometimes that renders upon ajax call completion
 
 = 1.0.2 - July 25, 2021 =
 
