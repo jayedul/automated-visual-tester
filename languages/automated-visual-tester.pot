@@ -13,6 +13,10 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: AV_Tester/dashboard.php:71
+msgid "Please, %sleave a review%s on Automated Visual Tester. Your feedback is valuable."
+msgstr ""
+
 #: AV_Tester/tester.php:51
 msgid "Test Not found"
 msgstr ""

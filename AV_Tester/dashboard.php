@@ -11,6 +11,7 @@ class Dashboard {
     public function __construct() {
         add_action('admin_menu', array($this, 'register_menu'));
         add_action('admin_enqueue_scripts', array($this, 'load_dashboard_scripts'));
+        add_filter( 'admin_footer_text', array($this, 'admin_footer_text'), 1 );
     }
 
     /**
@@ -61,4 +62,16 @@ class Dashboard {
 
         wp_enqueue_script( 'avt-dashboard-js', AVT_URL_BASE . 'assets/js/dashboard.js', array( 'jquery' ), AVT_VERSION, true );
 	}
+
+    /**
+     * Show review link in footer
+     */
+	public function admin_footer_text( $footer_text ) {
+		if ( isset($_GET['page']) && $_GET['page'] === 'automated-visual-tester' ) {
+			$footer_text = sprintf(__( 'Please, %sleave a review%s on Automated Visual Tester. Your feedback is valuable.', 'automated-visual-tester'), '<a href="https://wordpress.org/support/plugin/automated-visual-tester/reviews/#new-post" target="_blank">', '</a>');
+		}
+
+		return $footer_text;
+	}
+
 }
