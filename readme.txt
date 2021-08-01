@@ -25,7 +25,7 @@ https://github.com/jayedul/automated-visual-tester
 = 1.0.4 - August 01, 2021 =
 
 New: Demo video URL added
-New: Double click reuse range input field to go to start point
+New: Double click reuse range input field to go to the start point
 
 = 1.0.3 - July 28, 2021 =
 
