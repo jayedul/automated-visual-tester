@@ -1,6 +1,9 @@
 <?php $home_url = get_home_url(); ?>
 <div class="wrap" id="avt_dashboard_container"></div>
 <div class="wrap">
+    <br/>
+    <p>You could watch a demo on YouTube. <a href="https://youtu.be/7K08WaNP5Vw" target="_blank">https://youtu.be/7K08WaNP5Vw</a></p>
+    <br/>
     <b><?php _e( 'Instructions', 'automated-visual-tester' ); ?>:</b>
     <ul>
         <li>

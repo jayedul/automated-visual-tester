@@ -41,6 +41,45 @@ const getSectionTitle = sequence_title => {
     return title===null ? sequence_title : (title || '').trim();
 }
 
+const scrollNow=id=> {
+    let element = document.getElementById('id_to_action_'+id);
+    if(element) {
+        element.scrollIntoView({behavior:'smooth', block:'center'});
+
+        element.style.outline = '1px dashed red';
+        window.setTimeout(()=>{
+            element.style.outline = '';
+        }, 2500);
+    }
+}
+
+const scrollToAction=(target, blueprint, onChange)=>{
+    let id = target.value;
+    id = id.split('-');
+    id = id[0] || null;
+
+    if(isNaN(id) || !blueprint[id]) {
+        return;
+    }
+
+    // Remove focus from the element
+    window.jQuery(target).blur();
+
+    // Expand the range if collapse
+    for(let i=id; i>=0; i--) {
+        if(blueprint[i].sequence_title) {
+            if(blueprint[i].is_collapsed) {
+                onChange(blueprint[i].key, 'is_collapsed', false, ()=> scrollNow(id));
+                return;
+            };
+            break;
+        }
+    }
+
+    // Otherwise just call the scroll function
+    scrollNow(id);
+}
+
 /**
  * @return component
  * 
@@ -147,7 +186,7 @@ const BlueprintEditor=props=>
         <br/>
         <div>
             <a href="javascript:;" onClick={e=>onChange(null, 'is_collapsed', true)}>Collapse</a>
-            /
+            &nbsp; / &nbsp;
             <a href="javascript:;" onClick={e=>onChange(null, 'is_collapsed', false)}>Expand</a> All
         </div>
         <br/>
@@ -171,6 +210,7 @@ const BlueprintEditor=props=>
                         let {tooltip=''} = actions[action];
                         let is_redirect = action=='redirect' || (action=='reuse' && (blueprint[parseInt(value) || -1] || {}).action=='redirect');
                         let testing_offset = testing_entry_point+'&avt_test_offset='+index;
+                        const id_to_action = 'id_to_action_'+index;
 
                         let is_collapsed = false;
                         let section_index = null;
@@ -218,7 +258,7 @@ const BlueprintEditor=props=>
                             }
                             {
                                 is_collapsed ? null : 
-                                <tr key={key}>
+                                <tr key={key} id={id_to_action}>
                                     <td>
                                         {
                                             !is_redirect ? index+'.' :
@@ -266,7 +306,8 @@ const BlueprintEditor=props=>
                                                 name="value" 
                                                 title={value}
                                                 onInput={e=>onChange(key, e.currentTarget.name, e.currentTarget.value)} 
-                                                placeholder={actions[action].placeholder}/>
+                                                placeholder={actions[action].placeholder}
+                                                onDoubleClick={e=>action=='reuse' ? scrollToAction(e.currentTarget, blueprint, onChange) : 0}/>
                                         }
                                     </td>
                                     <td>

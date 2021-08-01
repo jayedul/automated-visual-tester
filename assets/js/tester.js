@@ -121,14 +121,13 @@ window.jQuery(window).load(function() {
             });
         }
         
-        this.event_looper = (blueprints, def_delay, pointer, has_next_page) => {
+        this.event_looper = (blueprints, meta) => {
 
             if(looper_terminated) {
                 return;
             }
 
-
-            var delay = def_delay;
+            var delay = meta.def_delay;
             var event  = blueprints.shift();
 
             var require_element = this.actions[event.action].xpath;
@@ -140,7 +139,7 @@ window.jQuery(window).load(function() {
             // Prepare element
             var element = null;
             if(require_element && event.xpath) {
-                if(pointer=='xpath') {
+                if(meta.pointer=='xpath') {
                     var DOM = document.evaluate(event.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     DOM ? element = $(DOM) : 0;
                 } else {
@@ -160,7 +159,7 @@ window.jQuery(window).load(function() {
                     if(event.skippable) {
                         console.log('AVT Target not found: '+ event.xpath);
                         console.log('Skipping element as it is marked as skippable');
-                        this.event_looper(blueprints, def_delay, pointer, has_next_page);
+                        this.event_looper(blueprints, meta);
                     } else {
                         console.log('Automated Testing Stopped');
                         this.overlay_protection(false, true);
@@ -182,7 +181,7 @@ window.jQuery(window).load(function() {
                 element.addClass('avt-tester-highlight');
             }
 
-            if(!blueprints || !blueprints.length || !has_next_page) {
+            if(!blueprints || !blueprints.length || !meta.has_next_page) {
                 // Complete the test if no more test
                 this.overlay_protection(false, true);
                 console.log('Testing Completed');
@@ -302,7 +301,7 @@ window.jQuery(window).load(function() {
                     return;
             }
 
-            if(!has_next_page || !blueprints.length || pause_test) {
+            if(!meta.has_next_page || !blueprints.length || pause_test) {
                 return;
             }
         
@@ -315,7 +314,7 @@ window.jQuery(window).load(function() {
                     }
 
                     $('.avt-tester-highlight').removeClass('avt-tester-highlight');
-                    this.event_looper(blueprints, def_delay, pointer, has_next_page);
+                    this.event_looper(blueprints, meta);
                     
                 }, 1000);
             }
@@ -446,8 +445,17 @@ window.jQuery(window).load(function() {
                     return;
                 }
 
+                // Set the start index again, might be modified already
                 this.setCookie(ck, start_index);
-                this.event_looper(remaining_tests, (data.event_delay || 0), (data.pointer || 'xpath'), has_next_page);
+
+                // Prepare the meta data
+                var meta = {
+                    def_delay: data.event_delay || 0,
+                    pointer: data.pointer || 'xpath',
+                    has_next_page: has_next_page
+                }
+
+                this.event_looper(remaining_tests, meta);
             });
         }
 

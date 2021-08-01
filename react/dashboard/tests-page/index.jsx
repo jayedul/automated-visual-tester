@@ -294,7 +294,7 @@ class DashboardRoot extends Component {
      * 
      * @since v1.0.0
      */
-    modifyEvent(key, name, value) {
+    modifyEvent(key, name, value, callback=()=>{}) {
 
         let {tests, current_one} = this.state;
 
@@ -310,7 +310,7 @@ class DashboardRoot extends Component {
             }
         }
 
-        this.setState({tests});
+        this.setState({tests}, callback);
     }
 
     /**
