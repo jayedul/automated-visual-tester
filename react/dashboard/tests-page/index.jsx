@@ -53,6 +53,7 @@ class DashboardRoot extends Component {
         tests[new_key] = blueprint || {
             title,
             entry_point: window.avt_object.home_url,
+            pointer: 'selector',
             event_delay: 500,
             blueprint: []
         }
@@ -297,6 +298,19 @@ class DashboardRoot extends Component {
     modifyEvent(key, name, value, callback=()=>{}) {
 
         let {tests, current_one} = this.state;
+
+        if(name=='xpath') {
+            console.log(tests[current_one].pointer, (value || '').trim().indexOf('/'));
+            if(tests[current_one].pointer=='xpath' && !((value || '').trim().indexOf('/')===0)) {
+                alert('Please write valid Xpath since your choosen selector type');
+                return;
+            }
+            
+            if(tests[current_one].pointer=='selector' && (value || '').trim().indexOf('/')===0) {
+                alert('Please write valid css selector since your choosen selector type is css');
+                return;
+            }
+        }
 
         for(let i=0; i<tests[current_one].blueprint.length; i++) {
 

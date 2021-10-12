@@ -4,7 +4,7 @@ Tags: testing, automation
 Requires at least: 5.3
 Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,6 +21,13 @@ Here is the public repository of this plugin on github if you are interested to 
 https://github.com/jayedul/automated-visual-tester 
 
 == Changelog ==
+
+= 1.0.5 - October 12, 2021 =
+
+New: Change event added
+Update: Sequence adder icon updated
+Update: Warning alert added for xpath and selector input
+Fix: Null showing for hovered sequence title
 
 = 1.0.4 - August 01, 2021 =
 

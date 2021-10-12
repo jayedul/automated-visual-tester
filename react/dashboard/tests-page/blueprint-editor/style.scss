@@ -6,6 +6,10 @@ table.avt-event-list {
     width: 100%;
     padding: 15px;
     
+    .avt-flip-vertical {
+        @include propertyWithPrefix(transform, scaleY(-1));
+    }
+
     tr {
         .separator {
             @include valueWithPrefix(display, flex);
@@ -20,24 +24,8 @@ table.avt-event-list {
             }
 
             &>span {
-                &>span {
-                    cursor: pointer;
-                    margin: 0 5px;
-
-                    &.collapsible-controller {
-                        margin-right: 0;
-                        display: inline-block;
-                        background: #3c434a;
-                        color: white;
-                        width: 16px;
-                        font-size: 17px;
-                        text-align: center;
-                        line-height: 15px;
-                        height: 16px;
-                        border-radius: 50%;
-                    }
-                }
-            }
+                padding: 0 8px;
+            }            
         }
 
         &.has_line {
@@ -68,10 +56,6 @@ table.avt-event-list {
 
         &:last-child {
             white-space: nowrap;
-            span {
-                cursor: pointer;
-                
-            }
         }
     }
 
@@ -83,13 +67,26 @@ table.avt-event-list {
     }
 }
 
-#avt_dashboard_container+div ul {
-    list-style-type: disc; 
-    list-style-position: outside; 
-    padding-left: 16px;
+#avt_dashboard_container{
+    &+div ul {
+        list-style-type: disc; 
+        list-style-position: outside; 
+        padding-left: 16px;
 
-    ul {
-        list-style-type: circle;
+        ul {
+            list-style-type: circle;
+        }
+    }
+
+    .dashicons {
+
+        cursor: pointer;
+        margin: 0 4px;
+        color: rgb(102, 102, 102);
+
+        &:hover {
+            color: black;
+        }
     }
 }
 

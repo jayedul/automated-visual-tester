@@ -22,6 +22,7 @@ const actions = {
 
     input_text: {title: 'Input Text', xpath: true, value: true},
     check: {title: 'Check', xpath: true, value: false},
+    change: {title: 'Change', xpath: true, value: false},
     uncheck: {title: 'UnCheck', xpath: true, value: false},
     select: {title: 'Select Dropdown', xpath: true, value: true, placeholder:'Value to select'},
 
@@ -195,7 +196,7 @@ const BlueprintEditor=props=>
                 <tr>
                     <th>Id</th>
                     <th>Action</th>
-                    <th>Xpath/Selector</th>
+                    <th>{pointer=='xpath' ? 'Xpath' : 'CSS Selector'}</th>
                     <th>Value</th>
                     <th>Comment</th>
                     <th title="Skip if target element not found">Skippable</th>
@@ -244,12 +245,13 @@ const BlueprintEditor=props=>
                                             <span>
                                                 {
                                                     !sequence_title ? null :
-                                                    <span className="collapsible-controller" onClick={e=>onChange(key, 'is_collapsed', !is_collapsed)}>
-                                                        {is_collapsed ? '+' : '-'}
-                                                    </span>
+                                                    <span 
+                                                        className={"dashicons dashicons-"+(!is_collapsed ? 'remove' : 'plus-alt')} 
+                                                        onClick={e=>onChange(key, 'is_collapsed', !is_collapsed)}
+                                                        title={(is_collapsed ? 'Expand' : 'Collapse')+' Section'}></span>
                                                 }
                                                 <span onClick={e=>onChange(key, 'sequence_title', getSectionTitle(sequence_title))}>
-                                                    {sequence_title || 'Add Sequence Title'}  ({section_index+'-'+section_index_last})
+                                                    {sequence_title || 'Add Sequence Title'}  {sequence_title ? '('+section_index+'-'+section_index_last+')' : ''}
                                                 </span>
                                             </span>
                                         </div>
@@ -339,12 +341,12 @@ const BlueprintEditor=props=>
                                         }
 
                                         <span 
-                                            class="dashicons dashicons-arrow-up-alt" 
+                                            class="dashicons dashicons-database-add" 
                                             title="Add action before" 
                                             onClick={()=>addNewAction(index, 'before')}></span>
 
                                         <span 
-                                            class="dashicons dashicons-arrow-down-alt" 
+                                            class="dashicons dashicons-database-add avt-flip-vertical" 
                                             title="Add action after" 
                                             onClick={()=>addNewAction(index+1, 'after')}></span>
                                     </td>

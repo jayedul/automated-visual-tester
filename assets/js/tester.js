@@ -22,12 +22,13 @@ window.jQuery(window).load(function() {
             mousedown: {title: 'Mousedown', xpath: true, value:false},
             mouseup: {title: 'Mouseup', xpath: true, value:false},
             submit: {title: 'Submit Form', xpath: true, value: false},
-        
+
             input_text: {title: 'Input Text', xpath: true, value: true},
             check: {title: 'Check', xpath: true, value: false},
+            change: {title: 'Change', xpath: true, value: false},
             uncheck: {title: 'UnCheck', xpath: true, value: false},
             select: {title: 'Select Dropdown', xpath: true, value: true, placeholder:'Value to select'},
-        
+
             gutengurg_title: {title: 'Gutengurg Title', xpath: false, value:true, placeholder: 'Title for gutengurg editor'},
             gutengurg_content: {title: 'Gutengurg Content', xpath: false, value:true, placeholder: 'Content for gutengurg editor'},
             
@@ -35,8 +36,8 @@ window.jQuery(window).load(function() {
             page_leave: {title: 'Page Leave', xpath:false, value:false},
             redirect: {title: 'Redirect', value:true, placeholder: 'URL'},
             reuse: {title: 'Reause Sequence', xpath:false, value:true, placeholder:'e.g. 5-12'},
-        
-            terminate: {title: 'Stop Test', xpath: false, value: false, tooltip: 'Useful to make a stop inside a big sequence.'}
+
+            terminate: {title: 'Terminate Test', xpath: false, value: false, tooltip: 'Useful to make a stop inside a big sequence.'}
         }
 
         var looper_terminated = false;
