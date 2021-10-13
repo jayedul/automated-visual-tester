@@ -45,82 +45,82 @@ msgstr ""
 msgid "Saved Successfully"
 msgstr ""
 
-#: templates/dashboard.php:5
+#: templates/dashboard.php:7
 msgid "Instructions"
 msgstr ""
 
-#: templates/dashboard.php:8
+#: templates/dashboard.php:10
 msgid "Please make sure the Xpath/Selector you input here always points to the correct element."
 msgstr ""
 
-#: templates/dashboard.php:11
+#: templates/dashboard.php:13
 msgid "Only Google Chrome browser is recommended to copy xpath or selector. Other browsers aren't efficient for this."
 msgstr ""
 
-#: templates/dashboard.php:14
+#: templates/dashboard.php:16
 msgid "Nested reusable sequence is not supported currently."
 msgstr ""
 
-#: templates/dashboard.php:17
+#: templates/dashboard.php:19
 msgid "To trigger events on multiple elements, please use css selector instead of xpath."
 msgstr ""
 
-#: templates/dashboard.php:20
+#: templates/dashboard.php:22
 msgid "The testing initiator URL you'd get is meant to be copied and accessed from a certain browser/tab/user-state based on your test case."
 msgstr ""
 
-#: templates/dashboard.php:23
+#: templates/dashboard.php:25
 msgid "Please don't access other URLs in the same browser session during testing."
 msgstr ""
 
-#: templates/dashboard.php:24
+#: templates/dashboard.php:26
 msgid "It is forbidden in favour of testing across navigated pages using browser session identifier cookie."
 msgstr ""
 
-#: templates/dashboard.php:27
+#: templates/dashboard.php:29
 msgid "Don't forget to add the 'Page Leave' event after the one the page would reload or redirect to a new page."
 msgstr ""
 
-#: templates/dashboard.php:28
+#: templates/dashboard.php:30
 msgid "So the tester can detect the new page and run the remaining test on that."
 msgstr ""
 
-#: templates/dashboard.php:29
+#: templates/dashboard.php:31
 msgid "Not necessary after the redirect event. Only after uncontrolled redirection made by anything else like browser/user."
 msgstr ""
 
-#: templates/dashboard.php:32
+#: templates/dashboard.php:34
 msgid "Redirect event is meant to be used only for the URLs under %s."
 msgstr ""
 
-#: templates/dashboard.php:33
+#: templates/dashboard.php:35
 msgid "So the tester will be able to resume on the redirected page too."
 msgstr ""
 
-#: templates/dashboard.php:36
+#: templates/dashboard.php:38
 msgid "Here you can get the testing URL at specific indexes only in case of the redirect event since it acts almost similar to the entry point URL."
 msgstr ""
 
-#: templates/dashboard.php:37
+#: templates/dashboard.php:39
 msgid "Make sure testing from specific offset will have appropriate environment, for example logged in user or other factors."
 msgstr ""
 
-#: templates/dashboard.php:40
+#: templates/dashboard.php:42
 msgid "Running tests in the private or incognito tab is prohibited since some features might not work there."
 msgstr ""
 
-#: templates/dashboard.php:43
+#: templates/dashboard.php:45
 msgid "Minimum delay 500 millisecond recommended."
 msgstr ""
 
-#: templates/dashboard.php:46
+#: templates/dashboard.php:48
 msgid "You can use some relative path for redirection"
 msgstr ""
 
-#: templates/dashboard.php:60
+#: templates/dashboard.php:62
 msgid "You can see the testing log in the browser console panel. And it is recommended in fact."
 msgstr ""
 
-#: templates/dashboard.php:63
+#: templates/dashboard.php:65
 msgid "Read developer documentation on GitHub."
 msgstr ""
